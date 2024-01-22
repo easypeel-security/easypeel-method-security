@@ -1,0 +1,21 @@
+apply from: 'lint.gradle'
+allprojects {
+	group = "org.epsec"
+	version = "${version}"
+
+	repositories {
+		mavenCentral()
+	}
+
+	apply plugin: 'java'
+
+	dependencies {
+		testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+		testImplementation "org.assertj:assertj-core:${assertjVersion}"
+	}
+
+	test {
+		useJUnitPlatform()
+	}
+}
