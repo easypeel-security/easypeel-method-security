@@ -1,0 +1,24 @@
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    sourceCompatibility = 11
+    targetCompatibility = 11
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = "org.epsec"
+                artifactId = "spring-method-ban"
+                version = "0.0.1"
+
+                from components.java
+
+                pom {
+                    name = 'spring-method-ban'
+                    description = 'Spring Method Ban test'
+                }
+            }
+        }
+    }
+}
