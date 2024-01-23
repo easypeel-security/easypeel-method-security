@@ -2,8 +2,8 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
 
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 17
+    targetCompatibility = 17
 
     publishing {
         publications {
