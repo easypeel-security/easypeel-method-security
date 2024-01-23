@@ -1,7 +1,7 @@
 apply from: 'lint.gradle'
 apply from: 'publishing.gradle'
 allprojects {
-	group = "org.epsec"
+	group = "${group}"
 	version = "${version}"
 
 	repositories {
