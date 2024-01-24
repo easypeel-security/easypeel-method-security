@@ -1,4 +1,4 @@
-rootProject.name = 'easypeel-method'
+rootProject.name = projectName
 
 include 'easypeel-method-security'
 

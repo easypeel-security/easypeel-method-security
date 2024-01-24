@@ -1,8 +1,8 @@
 apply from: 'lint.gradle'
 apply from: 'publishing.gradle'
 allprojects {
-	group = "${group}"
-	version = "${version}"
+	group = rootPackageName
+	version = projectVersion
 
 	repositories {
 		mavenCentral()
