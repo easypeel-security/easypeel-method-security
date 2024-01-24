@@ -17,50 +17,43 @@
 package org.epsec;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class FullyQualifiedClassNameTest {
 
-  @Test
-  void getNameReturnWell() {
-    assertEquals("org.springframework.web.bind.annotation.GetMapping",
-        FullyQualifiedClassName.GET_MAPPING.getName());
-    assertEquals("org.springframework.web.bind.annotation.PostMapping",
-        FullyQualifiedClassName.POST_MAPPING.getName());
-    assertEquals("org.springframework.web.bind.annotation.PutMapping",
-        FullyQualifiedClassName.PUT_MAPPING.getName());
-    assertEquals("org.springframework.web.bind.annotation.DeleteMapping",
-        FullyQualifiedClassName.DELETE_MAPPING.getName());
-    assertEquals("org.springframework.web.bind.annotation.PatchMapping",
-        FullyQualifiedClassName.PATCH_MAPPING.getName());
-    assertEquals("org.springframework.stereotype.Component", FullyQualifiedClassName.COMPONENT.getName());
-    assertEquals("org.springframework.context.annotation.EnableAspectJAutoProxy",
-        FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY.getName());
-    assertEquals("org.aspectj.lang.JoinPoint", FullyQualifiedClassName.JOIN_POINT.getName());
-    assertEquals("org.aspectj.lang.annotation.Aspect", FullyQualifiedClassName.ASPECT.getName());
-    assertEquals("org.aspectj.lang.annotation.Before", FullyQualifiedClassName.BEFORE.getName());
+  @ParameterizedTest
+  @CsvSource({
+      "org.springframework.web.bind.annotation.GetMapping, GET_MAPPING",
+      "org.springframework.web.bind.annotation.PostMapping, POST_MAPPING",
+      "org.springframework.web.bind.annotation.PutMapping, PUT_MAPPING",
+      "org.springframework.web.bind.annotation.DeleteMapping, DELETE_MAPPING",
+      "org.springframework.web.bind.annotation.PatchMapping, PATCH_MAPPING",
+      "org.springframework.stereotype.Component, COMPONENT",
+      "org.springframework.context.annotation.EnableAspectJAutoProxy, ENABLE_ASPECT_JAUTO_PROXY",
+      "org.aspectj.lang.JoinPoint, JOIN_POINT",
+      "org.aspectj.lang.annotation.Aspect, ASPECT",
+      "org.aspectj.lang.annotation.Before, BEFORE"
+  })
+  void getNameReturnWell(String expected, FullyQualifiedClassName fqcn) {
+    assertEquals(expected, fqcn.getName());
   }
 
-  @Test
-  void isWebAnnotationHappy() {
-    assertTrue(FullyQualifiedClassName.isWebAnnotation("org.springframework.web.bind.annotation.GetMapping"));
-    assertTrue(FullyQualifiedClassName.isWebAnnotation("org.springframework.web.bind.annotation.PostMapping"));
-    assertTrue(FullyQualifiedClassName.isWebAnnotation("org.springframework.web.bind.annotation.PutMapping"));
-    assertTrue(
-        FullyQualifiedClassName.isWebAnnotation("org.springframework.web.bind.annotation.DeleteMapping"));
-    assertTrue(FullyQualifiedClassName.isWebAnnotation("org.springframework.web.bind.annotation.PatchMapping"));
-  }
-
-  @Test
-  void isWebAnnotationSad() {
-    assertFalse(FullyQualifiedClassName.isWebAnnotation("org.springframework.stereotype.Component"));
-    assertFalse(FullyQualifiedClassName.isWebAnnotation(
-        "org.springframework.context.annotation.EnableAspectJAutoProxy"));
-    assertFalse(FullyQualifiedClassName.isWebAnnotation("org.aspectj.lang.JoinPoint"));
-    assertFalse(FullyQualifiedClassName.isWebAnnotation("org.aspectj.lang.annotation.Aspect"));
-    assertFalse(FullyQualifiedClassName.isWebAnnotation("org.aspectj.lang.annotation.Before"));
+  @ParameterizedTest
+  @CsvSource({
+      "org.springframework.web.bind.annotation.GetMapping, true",
+      "org.springframework.web.bind.annotation.PostMapping, true",
+      "org.springframework.web.bind.annotation.PutMapping, true",
+      "org.springframework.web.bind.annotation.DeleteMapping, true",
+      "org.springframework.web.bind.annotation.PatchMapping, true",
+      "org.springframework.stereotype.Component, false",
+      "org.springframework.context.annotation.EnableAspectJAutoProxy, false",
+      "org.aspectj.lang.JoinPoint, false",
+      "org.aspectj.lang.annotation.Aspect, false",
+      "org.aspectj.lang.annotation.Before, false"
+  })
+  void isWebAnnotation(String input, boolean expected) {
+    assertEquals(expected, FullyQualifiedClassName.isWebAnnotation(input));
   }
 }
