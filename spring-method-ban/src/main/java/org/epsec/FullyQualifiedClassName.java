@@ -56,11 +56,6 @@ public enum FullyQualifiedClassName {
    * @return true if the targetFQCN is a Web Annotation
    */
   public static boolean isWebAnnotation(String targetFQCN) {
-    for (FullyQualifiedClassName fqcn : FullyQualifiedClassName.values()) {
-      if (fqcn.getName().equals(targetFQCN)) {
-        return true;
-      }
-    }
-    return false;
+    return targetFQCN.startsWith("org.springframework.web.bind.annotation");
   }
 }
