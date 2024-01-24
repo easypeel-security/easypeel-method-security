@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
  * @author PENEKhun
  */
 @Target(ElementType.METHOD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface MethodBan {
 
   /**

@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2024 the original author or authors.
  *

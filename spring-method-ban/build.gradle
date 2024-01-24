@@ -1,3 +1,21 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
 dependencies {
-	implementation 'org.slf4j:slf4j-api:1.7.30'
+    implementation "com.squareup:javapoet:${javapoetVersion}"
+    compileOnly "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
+    implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+}
+
+shadowJar {
+    archiveBaseName.set(project.name)
+    archiveClassifier.set('')
+    archiveVersion.set("${version}")
+    configurations = [project.configurations.compileClasspath]
+    dependencies {
+        exclude(dependency -> {
+            return !(dependency.name.contains("org.aspectj") || dependency.name.contains("org.springframework.stereotype") || dependency.name.contains("com.github.benmanes.caffeine"))
+        })
+    }
 }
