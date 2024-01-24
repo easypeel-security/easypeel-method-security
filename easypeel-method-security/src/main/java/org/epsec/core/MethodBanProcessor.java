@@ -93,7 +93,7 @@ public class MethodBanProcessor extends AbstractProcessor {
 
     final ClassName before = ClassName.bestGuess(BEFORE.getName());
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-        .addMember("value", "$S", "@annotation(org.epsec.core.MethodBan)")
+        .addMember("value", "$S", "@annotation(org.epsec.MethodBan)")
         .build();
 
     final CodeBlock getMyIpAddressCode = CodeBlock.builder()
