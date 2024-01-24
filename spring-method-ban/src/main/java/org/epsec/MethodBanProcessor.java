@@ -148,7 +148,7 @@ public class MethodBanProcessor extends AbstractProcessor {
     return true;
   }
 
-  private static boolean isUsedWithMappingAnnotation(Element element) {
+  private boolean isUsedWithMappingAnnotation(Element element) {
     final List<String> springAnnotations = Arrays.asList(
         "org.springframework.web.bind.annotation.GetMapping",
         "org.springframework.web.bind.annotation.PostMapping",
