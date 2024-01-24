@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec;
+package org.epsec.core;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
@@ -37,8 +37,11 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+import org.epsec.MethodBan;
+
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -90,14 +93,20 @@ public class MethodBanProcessor extends AbstractProcessor {
 
     final ClassName before = ClassName.bestGuess(BEFORE.getName());
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-        .addMember("value", "$S", "@annotation(org.epsec.MethodBan)")
+        .addMember("value", "$S", "@annotation(org.epsec.core.MethodBan)")
+        .build();
+
+    final CodeBlock getMyIpAddressCode = CodeBlock.builder()
+        .addStatement("final String myIpAddress = $T.getHostAddress()",
+            ClassName.get("java.net", "InetAddress"), ClassName.get("java.net", "InetAddress"))
+        .addStatement("System.out.println(myIpAddress)")
         .build();
 
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
         .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
-        .addStatement("System.out.println(\"hi~\")")
+        .addStatement(getMyIpAddressCode)
         .build();
 
     final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
