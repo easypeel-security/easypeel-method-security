@@ -96,17 +96,32 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addMember("value", "$S", "@annotation(org.epsec.MethodBan)")
         .build();
 
-    final CodeBlock getMyIpAddressCode = CodeBlock.builder()
-        .addStatement("final String myIpAddress = $T.getHostAddress()",
-            ClassName.get("java.net", "InetAddress"), ClassName.get("java.net", "InetAddress"))
-        .addStatement("System.out.println(myIpAddress)")
+    final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp" + System.nanoTime())
+        .returns(String.class)
+        .addModifiers(Modifier.PRIVATE)
+        .addCode(CodeBlock.builder()
+            .addStatement("$T request = (($T) $T.getRequestAttributes()).getRequest()",
+                ClassName.bestGuess("jakarta.servlet.http.HttpServletRequest"),
+                ClassName.bestGuess("org.springframework.web.context.request.ServletRequestAttributes"),
+                ClassName.bestGuess("org.springframework.web.context.request.RequestContextHolder"))
+            .addStatement("$T xForwardedForHeader = $L.getHeader($S)", String.class, "request",
+                "X-Forwarded-For")
+            .beginControlFlow("if ($L == null)", "xForwardedForHeader")
+            .addStatement("return $L.getRemoteAddr()", "request")
+            .endControlFlow()
+            .addStatement("return $L.split($S)[0]", "xForwardedForHeader", ",")
+            .build())
+        .build();
+
+    final CodeBlock soutIp = CodeBlock.builder()
+        .addStatement("$T.out.println($S + $L())", System.class, "IP: ", getUserIpMethodSpec.name)
         .build();
 
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
         .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
-        .addStatement(getMyIpAddressCode)
+        .addCode(soutIp)
         .build();
 
     final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
@@ -114,6 +129,7 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addAnnotation(ClassName.bestGuess(ASPECT.getName()))
         .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
         .addMethod(methodSpec)
+        .addMethod(getUserIpMethodSpec)
         .build();
 
     try {
