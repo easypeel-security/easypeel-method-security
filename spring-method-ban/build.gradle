@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation 'com.squareup:javapoet:1.13.0'
+    implementation "com.squareup:javapoet:${javapoetVersion}"
     implementation 'org.slf4j:slf4j-api:2.0.5'
     compileOnly "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
