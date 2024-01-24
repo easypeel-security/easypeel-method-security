@@ -18,10 +18,14 @@ package org.epsec;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
+import static org.epsec.FullyQualifiedClassName.ASPECT;
+import static org.epsec.FullyQualifiedClassName.BEFORE;
+import static org.epsec.FullyQualifiedClassName.COMPONENT;
+import static org.epsec.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
+import static org.epsec.FullyQualifiedClassName.JOIN_POINT;
+import static org.epsec.FullyQualifiedClassName.isWebAnnotation;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -65,101 +69,104 @@ public class MethodBanProcessor extends AbstractProcessor {
       if (isAlreadyProcessed) {
         break;
       }
-
-      final MethodBan methodBan = element.getAnnotation(MethodBan.class);
-      if (methodBan.times() < 1) {
-        processingEnv.getMessager().printMessage(ERROR, "times must be greater than 0", element);
-      }
-
-      if (methodBan.seconds() < 1) {
-        processingEnv.getMessager().printMessage(ERROR, "seconds must be greater than 0", element);
-      }
-
-      if (methodBan.banSeconds() < 1) {
-        processingEnv.getMessager().printMessage(ERROR, "banSeconds must be greater than 0", element);
-      }
-
-      if (!element.getModifiers().contains(Modifier.PUBLIC)) {
-        processingEnv.getMessager().printMessage(ERROR, "Method must be public", element);
-      }
-
-      if (!isUsedWithMappingAnnotation(element)) {
-        processingEnv.getMessager().printMessage(ERROR,
-            "@MethodBan must be used with a Spring Mapping Annotation (@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping)",
-            element);
-      }
-
-      processingEnv.getMessager().printMessage(NOTE, "MethodBan Annotation Processing now ", element);
-
-      final ClassName component = ClassName.bestGuess("org.springframework.stereotype.Component");
-      final ClassName enableAspectJAutoProxy =
-          ClassName.bestGuess("org.springframework.context.annotation.EnableAspectJAutoProxy");
-      final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
-          .addModifiers(Modifier.PUBLIC)
-          .addAnnotation(component)
-          .addAnnotation(enableAspectJAutoProxy)
-          .build();
-
-      final Filer filer = processingEnv.getFiler();
-      final String fullPackageName = element.getEnclosingElement().toString();
-      final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
-
-      try {
-        JavaFile.builder(originalPackageName, enableAopClass)
-            .build()
-            .writeTo(filer);
-      } catch (IOException e) {
-        processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
-      }
-
-      // annotation spec
-      final ClassName before = ClassName.bestGuess("org.aspectj.lang.annotation.Before");
-      final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-          .addMember("value", "$S", "@annotation(org.epsec.MethodBan)")
-          .build();
-
-      // new Method
-      final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
-          .addModifiers(Modifier.PUBLIC)
-          .addAnnotation(annotationSpec)
-          .addParameter(ClassName.bestGuess("org.aspectj.lang.JoinPoint"), "joinPoint")
-          .addStatement("System.out.println(\"hi~\")")
-          .build();
-
-      // new Class
-      final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
-          .addModifiers(Modifier.PUBLIC)
-          .addAnnotation(ClassName.bestGuess("org.aspectj.lang.annotation.Aspect"))
-          .addAnnotation(ClassName.bestGuess("org.springframework.stereotype.Component"))
-          .addMethod(methodSpec)
-          .build();
-
-      // write file
-      try {
-        JavaFile.builder(originalPackageName, classSpec)
-            .build()
-            .writeTo(filer);
-      } catch (IOException e) {
-        processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
-      }
-
+      checkValidMethodBan(element);
+      processMethodBan(element);
       isAlreadyProcessed = true;
     }
     return true;
   }
 
-  private boolean isUsedWithMappingAnnotation(Element element) {
-    final List<String> springAnnotations = Arrays.asList(
-        "org.springframework.web.bind.annotation.GetMapping",
-        "org.springframework.web.bind.annotation.PostMapping",
-        "org.springframework.web.bind.annotation.PutMapping",
-        "org.springframework.web.bind.annotation.DeleteMapping",
-        "org.springframework.web.bind.annotation.PatchMapping"
-    );
+  private void processMethodBan(Element element) {
+    processingEnv.getMessager().printMessage(NOTE, "MethodBan Annotation Processing now ", element);
 
+    generateEnableAopClass(element);
+    generateMethodBanAspect(element);
+  }
+
+  private void generateMethodBanAspect(Element element) {
+    final Filer filer = processingEnv.getFiler();
+    final String fullPackageName = element.getEnclosingElement().toString();
+    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
+
+    final ClassName before = ClassName.bestGuess(BEFORE.getName());
+    final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
+        .addMember("value", "$S", "@annotation(org.epsec.MethodBan)")
+        .build();
+
+    final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(annotationSpec)
+        .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
+        .addStatement("System.out.println(\"hi~\")")
+        .build();
+
+    final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(ClassName.bestGuess(ASPECT.getName()))
+        .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
+        .addMethod(methodSpec)
+        .build();
+
+    try {
+      JavaFile.builder(originalPackageName, classSpec)
+          .build()
+          .writeTo(filer);
+    } catch (IOException e) {
+      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
+    }
+  }
+
+  private void generateEnableAopClass(Element element) {
+    final ClassName component = ClassName.bestGuess(COMPONENT.getName());
+    final ClassName enableAspectJAutoProxy =
+        ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName());
+    final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(component)
+        .addAnnotation(enableAspectJAutoProxy)
+        .build();
+
+    final Filer filer = processingEnv.getFiler();
+    final String fullPackageName = element.getEnclosingElement().toString();
+    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
+    try {
+      JavaFile.builder(originalPackageName, enableAopClass)
+          .build()
+          .writeTo(filer);
+    } catch (IOException e) {
+      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
+    }
+  }
+
+  private void checkValidMethodBan(Element element) {
+    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
+    if (methodBan.times() < 1) {
+      processingEnv.getMessager().printMessage(ERROR, "times must be greater than 0", element);
+    }
+
+    if (methodBan.seconds() < 1) {
+      processingEnv.getMessager().printMessage(ERROR, "seconds must be greater than 0", element);
+    }
+
+    if (methodBan.banSeconds() < 1) {
+      processingEnv.getMessager().printMessage(ERROR, "banSeconds must be greater than 0", element);
+    }
+
+    if (!element.getModifiers().contains(Modifier.PUBLIC)) {
+      processingEnv.getMessager().printMessage(ERROR, "Method must be public", element);
+    }
+
+    if (!isUsedWithMappingAnnotation(element)) {
+      processingEnv.getMessager()
+          .printMessage(ERROR, "@MethodBan must be used with a Spring Mapping Annotation " +
+              "(@GetMapping, @PostMapping, @PutMapping, @DeleteMapping, @PatchMapping)", element);
+    }
+  }
+
+  private boolean isUsedWithMappingAnnotation(Element element) {
     boolean isUsedWithMappingAnnotaion = false;
     for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
-      if (springAnnotations.contains(mirror.getAnnotationType().toString())) {
+      if (isWebAnnotation(mirror.getAnnotationType().toString())) {
         isUsedWithMappingAnnotaion = true;
         break;
       }
