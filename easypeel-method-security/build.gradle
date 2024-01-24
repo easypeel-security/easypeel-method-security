@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
     compileOnly "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
+    implementation "org.springframework:spring-context:${springContextVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 }
 
