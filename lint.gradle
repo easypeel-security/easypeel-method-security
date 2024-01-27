@@ -6,8 +6,13 @@ subprojects {
 		configFile = rootProject.file('config/checkstyle/checkstyle.xml')
 	}
 
-	tasks.register('lint') {
-		group = 'verification'
-		dependsOn checkstyleMain, checkstyleTest
+	tasks.withType(Checkstyle).tap {
+		configureEach {
+			reports {
+				xml {
+					destination = file("$buildDir/reports/checkstyle/checkstyle-result.xml")
+				}
+			}
+		}
 	}
 }
