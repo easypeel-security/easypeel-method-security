@@ -30,7 +30,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 public class Caffeines implements MemCache {
 
   private final Fqcn fullyQualifiedClassName;
-  private static final HashMap<String, Cache<String, Integer>> caches = new HashMap<>();
+  private static final HashMap<Fqcn, Cache<String, Integer>> caches = new HashMap<>();
   private int defaultMaximumSize = 1_000_00;
 
   /**
@@ -51,14 +51,14 @@ public class Caffeines implements MemCache {
    * @return a new cache
    */
   private Cache<String, Integer> getOrElseCreate() {
-    if (caches.containsKey(this.fullyQualifiedClassName.toString())) {
-      return caches.get(this.fullyQualifiedClassName.toString());
+    if (caches.containsKey(this.fullyQualifiedClassName)) {
+      return caches.get(this.fullyQualifiedClassName);
     }
 
     final Cache<String, Integer> cache = Caffeine.newBuilder()
         .maximumSize(this.defaultMaximumSize)
         .build();
-    caches.put(this.fullyQualifiedClassName.toString(), cache);
+    caches.put(this.fullyQualifiedClassName, cache);
     return cache;
   }
 

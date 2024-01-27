@@ -48,4 +48,28 @@ public class Fqcn {
   public String toString() {
     return fullPackage + "." + methodName;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Fqcn fqcn = (Fqcn) o;
+
+    if (!fullPackage.equals(fqcn.fullPackage)) {
+      return false;
+    }
+    return methodName.equals(fqcn.methodName);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = fullPackage.hashCode();
+    result = 31 * result + methodName.hashCode();
+    return result;
+  }
 }
