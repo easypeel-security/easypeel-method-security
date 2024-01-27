@@ -18,6 +18,7 @@ package org.epsec.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -49,5 +50,39 @@ class FqcnTest {
     assertThrows(IllegalArgumentException.class, () -> {
       new Fqcn(packageName, methodName);
     }, "Cannot create Fqcn with empty string");
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "org.epsec.engine, method1",
+      "org.epsec.engine, method2",
+      "org.springframework.security, hello"})
+  void testEquals(String packageName, String methodName) {
+    // given
+    final Fqcn fqcn1 = new Fqcn(packageName, methodName);
+    final Fqcn fqcn2 = new Fqcn(packageName, methodName);
+
+    // when
+    final boolean actual = fqcn1.equals(fqcn2);
+
+    // then
+    assertTrue(actual);
+  }
+
+  @ParameterizedTest
+  @CsvSource({
+      "org.epsec.engine, method1",
+      "org.epsec.engine, method2",
+      "org.springframework.security, hello"})
+  void testHashCode(String packageName, String methodName) {
+    // given
+    final Fqcn fqcn1 = new Fqcn(packageName, methodName);
+    final Fqcn fqcn2 = new Fqcn(packageName, methodName);
+
+    // when
+    final int actual = fqcn1.hashCode();
+
+    // then
+    assertEquals(fqcn2.hashCode(), actual);
   }
 }
