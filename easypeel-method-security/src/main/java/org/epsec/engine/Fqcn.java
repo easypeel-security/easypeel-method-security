@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
  * Fully Qualified Class Name Data Structure.
  * @author PENEKhun
  */
-public class Fqcn {
+public final class Fqcn {
 
   private final String fullPackage;
   private final String methodName;
@@ -58,7 +58,7 @@ public class Fqcn {
       return false;
     }
 
-    Fqcn fqcn = (Fqcn) o;
+    final Fqcn fqcn = (Fqcn) o;
 
     if (!fullPackage.equals(fqcn.fullPackage)) {
       return false;
