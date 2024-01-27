@@ -5,14 +5,4 @@ subprojects {
 		configDirectory = rootProject.file('config/checkstyle')
 		configFile = rootProject.file('config/checkstyle/checkstyle.xml')
 	}
-
-	tasks.withType(Checkstyle).tap {
-		configureEach {
-			reports {
-				xml {
-					destination = file("$buildDir/reports/checkstyle/checkstyle-result.xml")
-				}
-			}
-		}
-	}
 }

@@ -31,9 +31,12 @@ jobs:
           name: build-reports
           path: '**/build/reports/'
 
-      - name: Run check style
+      - name: Run checkstyle reporter
         uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.TOKEN }}
           reporter: 'github-pr-check'
-          checkstyle_config: '/config/checkstyle/checkstyle.xml'
+          checkstyle_config: 'config/checkstyle/checkstyle.xml'
+
+      - name: Run checkstyle gradle
+        run: ./gradlew checkstyleMain checkstyleTest
