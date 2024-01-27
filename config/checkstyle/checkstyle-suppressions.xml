@@ -14,7 +14,7 @@
   <!-- Suppress checks related with main method in integration tests and examples. -->
   <suppress checks="UncommentedMain|HideUtilityClassConstructor" files="[\\/](it|ghz|examples)[\\/]"/>
   <!-- Suppress missing copyright at .properties file -->
-  <suppress checks="CopyrightHeader" files=".*\.properties$" />
+  <suppress id="CopyrightHeader" files=".*\.properties$" />
   <!-- Suppress meterRegistry related checks in non-main code. -->
   <suppress id="PreferFlagsMeterRegistry" files="[\\/](examples|it|jmh|test)[\\/]" />
   <suppress id="PreferFlagsMeterRegistry" files="[\\/](DefaultFlagsProvider.java|Flags.java|FlagsProvider.java)" />
