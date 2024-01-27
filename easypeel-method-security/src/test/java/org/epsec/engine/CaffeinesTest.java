@@ -43,6 +43,16 @@ class CaffeinesTest {
   }
 
   @Test
+  void isOverAccessTimeDoesNotIncrementAccessCount() {
+    // given
+    final Caffeines caffeines = new Caffeines(FQCN);
+    final int accessLimit = 1;
+    // when & then
+    assertFalse(caffeines.isOverAccessTime(IP, accessLimit));
+    assertFalse(caffeines.isOverAccessTime(IP, accessLimit));
+  }
+
+  @Test
   void isOverAccessTimeReturnFalse() {
     // given
     final Caffeines caffeines = new Caffeines(FQCN);
