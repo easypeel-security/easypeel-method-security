@@ -38,6 +38,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import org.epsec.MethodBan;
+import org.epsec.engine.Caffeines;
+import org.epsec.engine.Fqcn;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -87,6 +89,9 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private void generateMethodBanAspect(Element element) {
+    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
+    processingEnv.getMessager().printMessage(NOTE, methodBan.toString());
+
     final Filer filer = processingEnv.getFiler();
     final String fullPackageName = element.getEnclosingElement().toString();
     final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
@@ -113,15 +118,23 @@ public class MethodBanProcessor extends AbstractProcessor {
             .build())
         .build();
 
-    final CodeBlock soutIp = CodeBlock.builder()
-        .addStatement("$T.out.println($S + $L())", System.class, "IP: ", getUserIpMethodSpec.name)
+    final CodeBlock codes = CodeBlock.builder()
+        .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
+        .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
+        .addStatement("$T caffeines = new $T(new $T(packageName, methodName))",
+            Caffeines.class, Caffeines.class, Fqcn.class)
+        .addStatement("$L.incrementVisit($L())", "caffeines", getUserIpMethodSpec.name)
+        .beginControlFlow("if ($L.isOverAccessTime($L(), $L))", "caffeines", getUserIpMethodSpec.name,
+            methodBan.times())
+        .addStatement("throw new $T($S)", RuntimeException.class, methodBan.banMessage())
+        .endControlFlow()
         .build();
 
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
         .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
-        .addCode(soutIp)
+        .addCode(codes)
         .build();
 
     final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
