@@ -37,6 +37,7 @@ jobs:
           github_token: ${{ secrets.TOKEN }}
           reporter: 'github-pr-check'
           checkstyle_config: 'config/checkstyle/checkstyle.xml'
+          properties_file: 'Dconfig_loc=config/checkstyle/checkstyle-suppressions.xml'
 
       - name: Run checkstyle gradle
         run: ./gradlew checkstyleMain checkstyleTest
