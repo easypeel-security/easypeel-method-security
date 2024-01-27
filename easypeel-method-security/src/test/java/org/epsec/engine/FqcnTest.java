@@ -47,9 +47,8 @@ class FqcnTest {
       ", method2"})
   void fqcnToStringSad(String packageName, String methodName) {
     // when & then
-    assertThrows(IllegalArgumentException.class, () -> {
-      new Fqcn(packageName, methodName);
-    }, "Cannot create Fqcn with empty string");
+    assertThrows(IllegalArgumentException.class, () -> new Fqcn(packageName, methodName),
+        "Cannot create Fqcn with empty string");
   }
 
   @ParameterizedTest
