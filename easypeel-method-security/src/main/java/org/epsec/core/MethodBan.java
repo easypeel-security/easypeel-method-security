@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec;
+package org.epsec.core;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

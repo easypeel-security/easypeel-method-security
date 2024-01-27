@@ -18,7 +18,6 @@ package org.epsec.core;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.epsec.FullyQualifiedClassName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

@@ -18,12 +18,12 @@ package org.epsec.core;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static javax.tools.Diagnostic.Kind.NOTE;
-import static org.epsec.FullyQualifiedClassName.ASPECT;
-import static org.epsec.FullyQualifiedClassName.BEFORE;
-import static org.epsec.FullyQualifiedClassName.COMPONENT;
-import static org.epsec.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
-import static org.epsec.FullyQualifiedClassName.JOIN_POINT;
-import static org.epsec.FullyQualifiedClassName.isWebAnnotation;
+import static org.epsec.core.FullyQualifiedClassName.ASPECT;
+import static org.epsec.core.FullyQualifiedClassName.BEFORE;
+import static org.epsec.core.FullyQualifiedClassName.COMPONENT;
+import static org.epsec.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
+import static org.epsec.core.FullyQualifiedClassName.JOIN_POINT;
+import static org.epsec.core.FullyQualifiedClassName.isWebAnnotation;
 
 import java.io.IOException;
 import java.util.Set;
@@ -37,7 +37,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import org.epsec.MethodBan;
 import org.epsec.engine.Caffeines;
 import org.epsec.engine.Fqcn;
 
