@@ -18,7 +18,6 @@ package org.epsec.engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -53,19 +52,24 @@ class FqcnTest {
 
   @ParameterizedTest
   @CsvSource({
-      "org.epsec.engine, method1",
-      "org.epsec.engine, method2",
-      "org.springframework.security, hello"})
-  void testEquals(String packageName, String methodName) {
+      "org.epsec.engine, method1, org.epsec.engine, method1, true",
+      "org.epsec.engine, method2, org.epsec.engine, method2, true",
+      "org.springframework.security, hello, org.springframework.security, hello, true",
+      "org.epsec.engine, method1, org.epsec.engine, method2, false",
+      "org.epsec.engine, method2, org.epsec.engine, method1, false",
+      "org.springframework.security, hello, org.springframework.security, hi, false",
+  })
+  void testEquals(String packageName1, String methodName1,
+      String packageName2, String methodName2, boolean expected) {
     // given
-    final Fqcn fqcn1 = new Fqcn(packageName, methodName);
-    final Fqcn fqcn2 = new Fqcn(packageName, methodName);
+    final Fqcn fqcn1 = new Fqcn(packageName1, methodName1);
+    final Fqcn fqcn2 = new Fqcn(packageName2, methodName2);
 
     // when
     final boolean actual = fqcn1.equals(fqcn2);
 
     // then
-    assertTrue(actual);
+    assertEquals(expected, actual);
   }
 
   @ParameterizedTest
