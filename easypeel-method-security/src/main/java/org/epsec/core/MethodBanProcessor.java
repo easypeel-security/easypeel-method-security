@@ -141,13 +141,7 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addMethod(getUserIpMethodSpec)
         .build();
 
-    try {
-      JavaFile.builder(originalPackageName, classSpec)
-          .build()
-          .writeTo(filer);
-    } catch (IOException e) {
-      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
-    }
+    saveJavaFile(originalPackageName, classSpec);
   }
 
   private void generateEnableAopClass(Element element) {
@@ -160,15 +154,18 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addAnnotation(enableAspectJAutoProxy)
         .build();
 
+    saveJavaFile(element.getEnclosingElement().toString(), enableAopClass);
+  }
+
+  private void saveJavaFile(String fullPackageName, TypeSpec classSpec) {
     final Filer filer = processingEnv.getFiler();
-    final String fullPackageName = element.getEnclosingElement().toString();
     final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
     try {
-      JavaFile.builder(originalPackageName, enableAopClass)
+      JavaFile.builder(originalPackageName, classSpec)
           .build()
           .writeTo(filer);
     } catch (IOException e) {
-      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
+      processingEnv.getMessager().printMessage(ERROR, "Fatal error" + e.getMessage());
     }
   }
 
