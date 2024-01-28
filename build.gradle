@@ -1,6 +1,6 @@
 apply from: 'lint.gradle'
 apply from: 'publishing.gradle'
-allprojects {
+subprojects {
 	group = rootPackageName
 	version = projectVersion
 
@@ -16,6 +16,9 @@ allprojects {
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 		testImplementation "org.assertj:assertj-core:${assertjVersion}"
+		testImplementation "com.google.testing.compile:compile-testing:${compileTestingVersion}"
+		testImplementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+		testImplementation "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
 	}
 
 	test {
