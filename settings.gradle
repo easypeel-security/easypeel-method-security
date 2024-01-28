@@ -1,3 +1,4 @@
-rootProject.name = 'spring-method-ban'
+rootProject.name = projectName
 
-include 'spring-method-ban'
+include 'easypeel-method-security'
+

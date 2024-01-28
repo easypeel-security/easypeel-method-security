@@ -5,9 +5,4 @@ subprojects {
 		configDirectory = rootProject.file('config/checkstyle')
 		configFile = rootProject.file('config/checkstyle/checkstyle.xml')
 	}
-
-	tasks.register('lint') {
-		group = 'verification'
-		dependsOn checkstyleMain, checkstyleTest
-	}
 }

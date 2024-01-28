@@ -1,14 +1,15 @@
 apply from: 'lint.gradle'
 apply from: 'publishing.gradle'
 allprojects {
-	group = "${group}"
-	version = "${version}"
+	group = rootPackageName
+	version = projectVersion
 
 	repositories {
 		mavenCentral()
 	}
 
 	apply plugin: 'java'
+	apply plugin: 'jacoco'
 
 	dependencies {
 		testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
@@ -19,5 +20,13 @@ allprojects {
 
 	test {
 		useJUnitPlatform()
+		finalizedBy jacocoTestReport
+	}
+
+	jacocoTestReport {
+		dependsOn test // tests are required to run before generating the report
+		reports {
+			xml.required.set(true)
+		}
 	}
 }

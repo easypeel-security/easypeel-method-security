@@ -8,15 +8,15 @@ subprojects {
     publishing {
         publications {
             maven(MavenPublication) {
-                groupId = "org.epsec"
-                artifactId = "spring-method-ban"
-                version = "0.0.1"
+                groupId = rootPackageName
+                artifactId = rootProject.name
+                version = projectVersion
 
                 from components.java
 
                 pom {
-                    name = 'spring-method-ban'
-                    description = 'Spring Method Ban test'
+                    name = rootProject.name
+                    description = 'Spring Method Security'
                 }
             }
         }

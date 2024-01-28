@@ -17,4 +17,4 @@
 /**
  * MethodBan Core.
  */
-package org.epsec;
+package org.epsec.core;

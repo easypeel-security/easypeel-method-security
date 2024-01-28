@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec;
+package org.epsec.core;
 
 /**
  * Enum Class with recorded 'Fully Qualified Class Name' used in Spring framework.

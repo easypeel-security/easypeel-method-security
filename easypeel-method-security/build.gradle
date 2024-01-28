@@ -5,6 +5,7 @@ plugins {
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
     compileOnly "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
+    implementation "org.springframework:spring-context:${springContextVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 }
 
@@ -15,7 +16,7 @@ shadowJar {
     configurations = [project.configurations.compileClasspath]
     dependencies {
         exclude(dependency -> {
-            return !(dependency.name.contains("org.aspectj") || dependency.name.contains("org.springframework.stereotype") || dependency.name.contains("com.github.benmanes.caffeine"))
+            return !(dependency.name.contains("org.aspectj") || dependency.name.contains("org.springframework.stereotype") || dependency.name.contains("com.github.ben-manes"))
         })
     }
 }

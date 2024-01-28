@@ -1,5 +1,8 @@
-name: Build Pull Request
-on: pull_request
+name: "Build & Test"
+on:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -17,9 +20,6 @@ jobs:
 
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
 
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -40,3 +40,9 @@ jobs:
           properties_file: 'config/checkstyle/checkstyle-git-action.properties'
           fail_on_error: true
           level: 'error'
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: '**/build/reports/jacoco/test/jacocoTestReport.xml'
