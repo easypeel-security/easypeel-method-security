@@ -34,7 +34,10 @@ class FullyQualifiedClassNameTest {
       "org.springframework.context.annotation.EnableAspectJAutoProxy, ENABLE_ASPECT_JAUTO_PROXY",
       "org.aspectj.lang.JoinPoint, JOIN_POINT",
       "org.aspectj.lang.annotation.Aspect, ASPECT",
-      "org.aspectj.lang.annotation.Before, BEFORE"
+      "org.aspectj.lang.annotation.Before, BEFORE",
+      "jakarta.servlet.http.HttpServletRequest, HTTP_SERVLET_REQUEST",
+      "org.springframework.web.context.request.ServletRequestAttributes, SERVLET_REQUEST_ATTRIBUTES",
+      "org.springframework.web.context.request.RequestContextHolder, REQUEST_CONTEXT_HOLDER"
   })
   void getNameReturnWell(String expected, FullyQualifiedClassName fqcn) {
     assertEquals(expected, fqcn.getName());
@@ -51,7 +54,10 @@ class FullyQualifiedClassNameTest {
       "org.springframework.context.annotation.EnableAspectJAutoProxy, false",
       "org.aspectj.lang.JoinPoint, false",
       "org.aspectj.lang.annotation.Aspect, false",
-      "org.aspectj.lang.annotation.Before, false"
+      "org.aspectj.lang.annotation.Before, false",
+      "jakarta.servlet.http.HttpServletRequest, false",
+      "org.springframework.web.context.request.ServletRequestAttributes, false",
+      "org.springframework.web.context.request.RequestContextHolder, false"
   })
   void isWebAnnotation(String input, boolean expected) {
     assertEquals(expected, FullyQualifiedClassName.isWebAnnotation(input));

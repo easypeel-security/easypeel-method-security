@@ -17,7 +17,7 @@
 package org.epsec.core;
 
 /**
- * Enum Class with recorded 'Fully Qualified Class Name' used in Spring framework.
+ * Enum Class with recorded 'Fully Qualified Class Name' used in Spring framework frequently.
  *
  * @author PENEKhun
  */
@@ -31,7 +31,10 @@ public enum FullyQualifiedClassName {
   ENABLE_ASPECT_JAUTO_PROXY("org.springframework.context.annotation.EnableAspectJAutoProxy"),
   JOIN_POINT("org.aspectj.lang.JoinPoint"),
   ASPECT("org.aspectj.lang.annotation.Aspect"),
-  BEFORE("org.aspectj.lang.annotation.Before");
+  BEFORE("org.aspectj.lang.annotation.Before"),
+  HTTP_SERVLET_REQUEST("jakarta.servlet.http.HttpServletRequest"),
+  SERVLET_REQUEST_ATTRIBUTES("org.springframework.web.context.request.ServletRequestAttributes"),
+  REQUEST_CONTEXT_HOLDER("org.springframework.web.context.request.RequestContextHolder");
 
   private final String name;
 

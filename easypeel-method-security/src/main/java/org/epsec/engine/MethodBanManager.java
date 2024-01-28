@@ -26,24 +26,21 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
- * MemCache Factory.
+ * MethodBanManager.
  * @author PENEKhun
  */
-public class Caffeines implements MemCache {
+public class MethodBanManager implements MethodBanInterface {
 
   private final Fqcn fqcn;
   private final int times;
-  private final int seconds;
-  private final int banSeconds;
   private final String banMessage;
   private static final HashMap<Fqcn, Cache<String, Integer>> accessCache = new HashMap<>();
   private static final HashMap<Fqcn, Cache<String, LocalDateTime>> banCache = new HashMap<>();
-  private int defaultMaximumSize = 1_000_00;
 
   /**
    * Constructor.
    */
-  public Caffeines(String fullPackage, String methodName, int times, int seconds, int banSeconds,
+  public MethodBanManager(String fullPackage, String methodName, int times, int seconds, int banSeconds,
       String banMessage) {
     assert times >= 2;
     assert seconds >= 1;
@@ -53,29 +50,18 @@ public class Caffeines implements MemCache {
     assert StringUtils.hasText(banMessage);
 
     this.times = times;
-    this.seconds = seconds;
-    this.banSeconds = banSeconds;
     this.banMessage = banMessage;
     this.fqcn = new Fqcn(fullPackage, methodName);
 
+    final int defaultMaximumSize = 1_000_00;
     accessCache.putIfAbsent(fqcn, Caffeine.newBuilder()
-        .maximumSize(this.defaultMaximumSize)
-        .expireAfterWrite(this.seconds, TimeUnit.SECONDS)
+        .maximumSize(defaultMaximumSize)
+        .expireAfterWrite(seconds, TimeUnit.SECONDS)
         .build());
-
     banCache.putIfAbsent(fqcn, Caffeine.newBuilder()
-        .maximumSize(this.defaultMaximumSize)
-        .expireAfterWrite(this.banSeconds, TimeUnit.SECONDS)
-        .evictionListener((key, value, cause) -> {
-          if (cause.wasEvicted()) {
-            accessCache.get(fqcn).invalidate(String.valueOf(key));
-          }
-        })
+        .maximumSize(defaultMaximumSize)
+        .expireAfterWrite(banSeconds, TimeUnit.SECONDS)
         .build());
-  }
-
-  private void changeDefaultMaximumSize(int size) {
-    this.defaultMaximumSize = size;
   }
 
   @Override

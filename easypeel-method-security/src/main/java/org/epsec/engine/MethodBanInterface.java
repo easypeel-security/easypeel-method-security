@@ -17,10 +17,10 @@
 package org.epsec.engine;
 
 /**
- * MemCache Interface.
+ * The interface for MethodBanManager.
  * @author PENEKhun
  */
-public interface MemCache {
+public interface MethodBanInterface {
 
   /**
    * 1. Check if the number of visits exceeds the access time.

@@ -21,14 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-class CaffeinesTest {
+class MethodBanManagerTest {
 
   final String testIp = "Test";
 
   @Test
   void checkBanAndAccessThrowsWhenExceedAccess() {
     // given
-    final Caffeines caffeines = new Caffeines("org.test", "method", 3, 2, 1, "You are banned");
+    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 3, 2, 1, "You are banned");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
     caffeines.checkBanAndAccess(testIp);
@@ -42,7 +42,7 @@ class CaffeinesTest {
   @Test
   void checkBanAndAccessDoesNotThrows() {
     // given
-    final Caffeines caffeines = new Caffeines("org.test", "method", 3, 1, 1, "test");
+    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 3, 1, 1, "test");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
 
@@ -53,7 +53,7 @@ class CaffeinesTest {
   @Test
   void banCacheExpireWorking() throws Exception {
     // given
-    final Caffeines caffeines = new Caffeines("org.test", "method", 2, 10, 1, "test");
+    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 2, 10, 1, "test");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
     try {
