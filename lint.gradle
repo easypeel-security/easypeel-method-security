@@ -4,5 +4,6 @@ subprojects {
 	checkstyle {
 		configDirectory = rootProject.file('config/checkstyle')
 		configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+		toolVersion = '9.0.1'
 	}
 }
