@@ -16,7 +16,9 @@
 
 package org.epsec.engine;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.util.StringUtils;
 
@@ -29,66 +31,80 @@ import com.github.benmanes.caffeine.cache.Caffeine;
  */
 public class Caffeines implements MemCache {
 
-  private final Fqcn fullyQualifiedClassName;
-  private static final HashMap<Fqcn, Cache<String, Integer>> caches = new HashMap<>();
+  private final Fqcn fqcn;
+  private final int times;
+  private final int seconds;
+  private final int banSeconds;
+  private final String banMessage;
+  private static final HashMap<Fqcn, Cache<String, Integer>> accessCache = new HashMap<>();
+  private static final HashMap<Fqcn, Cache<String, LocalDateTime>> banCache = new HashMap<>();
   private int defaultMaximumSize = 1_000_00;
 
   /**
    * Constructor.
-   * @param fullyQualifiedClassName Fully Qualified Class Name
    */
-  public Caffeines(Fqcn fullyQualifiedClassName) {
-    this.fullyQualifiedClassName = fullyQualifiedClassName;
+  public Caffeines(String fullPackage, String methodName, int times, int seconds, int banSeconds,
+      String banMessage) {
+    assert times >= 2;
+    assert seconds >= 1;
+    assert banSeconds >= 1;
+    assert StringUtils.hasText(fullPackage);
+    assert StringUtils.hasText(methodName);
+    assert StringUtils.hasText(banMessage);
+
+    this.times = times;
+    this.seconds = seconds;
+    this.banSeconds = banSeconds;
+    this.banMessage = banMessage;
+    this.fqcn = new Fqcn(fullPackage, methodName);
+
+    accessCache.putIfAbsent(fqcn, Caffeine.newBuilder()
+        .maximumSize(this.defaultMaximumSize)
+        .expireAfterWrite(this.seconds, TimeUnit.SECONDS)
+        .build());
+
+    banCache.putIfAbsent(fqcn, Caffeine.newBuilder()
+        .maximumSize(this.defaultMaximumSize)
+        .expireAfterWrite(this.banSeconds, TimeUnit.SECONDS)
+        .evictionListener((key, value, cause) -> {
+          if (cause.wasEvicted()) {
+            accessCache.get(fqcn).invalidate(String.valueOf(key));
+          }
+        })
+        .build());
   }
 
   private void changeDefaultMaximumSize(int size) {
     this.defaultMaximumSize = size;
   }
 
-  /**
-   * Create a new cache if it does not exist.
-   *
-   * @return a new cache
-   */
-  private Cache<String, Integer> getOrElseCreate() {
-    if (caches.containsKey(this.fullyQualifiedClassName)) {
-      return caches.get(this.fullyQualifiedClassName);
-    }
-
-    final Cache<String, Integer> cache = Caffeine.newBuilder()
-        .maximumSize(this.defaultMaximumSize)
-        .build();
-    caches.put(this.fullyQualifiedClassName, cache);
-    return cache;
-  }
-
   @Override
-  public boolean isOverAccessTime(String ipAddress, int accessTime) {
+  public void checkBanAndAccess(String ipAddress) throws BanException {
     assert StringUtils.hasText(ipAddress);
 
-    final Cache<String, Integer> cache = getOrElseCreate();
-    Integer count = cache.getIfPresent(ipAddress);
-    if (count == null) {
-      count = 0;
+    final Cache<String, Integer> accessLog = accessCache.get(fqcn);
+    final Cache<String, LocalDateTime> banLog = banCache.get(fqcn);
+    if (banLog.getIfPresent(ipAddress) != null) {
+      throw new BanException(banMessage);
     }
 
-    return count > accessTime;
+    final Integer count = accessLog.getIfPresent(ipAddress);
+    if (count == null) {
+      accessLog.put(ipAddress, 1);
+    } else if (count + 1 >= times) {
+      banLog.put(ipAddress, LocalDateTime.now());
+      accessLog.invalidate(ipAddress);
+      throw new BanException(banMessage);
+    } else {
+      accessLog.put(ipAddress, count + 1);
+    }
   }
 
   /**
-   * Increment the visit count.
-   *
-   * @param ipAddress IP Address
+   * Clear caches.
    */
-  public void incrementVisit(String ipAddress) {
-    assert StringUtils.hasText(ipAddress);
-
-    final Cache<String, Integer> cache = getOrElseCreate();
-    Integer count = cache.getIfPresent(ipAddress);
-    if (count == null) {
-      count = 0;
-    }
-
-    cache.put(ipAddress, count + 1);
+  protected void clearCaches() {
+    accessCache.get(fqcn).invalidateAll();
+    banCache.get(fqcn).invalidateAll();
   }
 }

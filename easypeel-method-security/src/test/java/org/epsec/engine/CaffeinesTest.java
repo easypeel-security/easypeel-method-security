@@ -16,67 +16,54 @@
 
 package org.epsec.engine;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
 class CaffeinesTest {
 
-  static final Fqcn FQCN = new Fqcn("org.epsec.engine", "testMethod");
-  static final String IP = "Test";
+  final String testIp = "Test";
 
   @Test
-  void isOverAccessTimeReturnTrue() {
+  void checkBanAndAccessThrowsWhenExceedAccess() {
     // given
-    final Caffeines caffeines = new Caffeines(FQCN);
-    final int accessLimit = 3;
-    caffeines.incrementVisit(IP);
-    caffeines.incrementVisit(IP);
-    caffeines.incrementVisit(IP);
+    final Caffeines caffeines = new Caffeines("org.test", "method", 3, 2, 1, "You are banned");
+    caffeines.clearCaches();
+    caffeines.checkBanAndAccess(testIp);
+    caffeines.checkBanAndAccess(testIp);
 
-    // when
-    final boolean actual = caffeines.isOverAccessTime(IP, accessLimit);
-
-    // then
-    assertTrue(actual);
-  }
-
-  @Test
-  void isOverAccessTimeDoesNotIncrementAccessCount() {
-    // given
-    final Caffeines caffeines = new Caffeines(FQCN);
-    final int accessLimit = 1;
     // when & then
-    assertFalse(caffeines.isOverAccessTime(IP, accessLimit));
-    assertFalse(caffeines.isOverAccessTime(IP, accessLimit));
+    assertThrows(BanException.class,
+        () -> caffeines.checkBanAndAccess(testIp),
+        "Your are banned");
   }
 
   @Test
-  void isOverAccessTimeReturnFalse() {
+  void checkBanAndAccessDoesNotThrows() {
     // given
-    final Caffeines caffeines = new Caffeines(FQCN);
-    final int accessLimit = 3;
-    caffeines.incrementVisit(IP);
-    caffeines.incrementVisit(IP);
+    final Caffeines caffeines = new Caffeines("org.test", "method", 3, 1, 1, "test");
+    caffeines.clearCaches();
+    caffeines.checkBanAndAccess(testIp);
 
-    // when
-    final boolean actual = caffeines.isOverAccessTime(IP, accessLimit);
-
-    // then
-    assertFalse(actual);
+    // when & then
+    assertDoesNotThrow(() -> caffeines.checkBanAndAccess(testIp));
   }
 
   @Test
-  void cachesFieldIsSingleton() {
+  void banCacheExpireWorking() throws Exception {
     // given
-    final Caffeines original = new Caffeines(FQCN);
-    final int accessLimit = 1;
-    original.incrementVisit(IP);
-    original.incrementVisit(IP);
-    final Caffeines other = new Caffeines(FQCN);
+    final Caffeines caffeines = new Caffeines("org.test", "method", 2, 10, 1, "test");
+    caffeines.clearCaches();
+    caffeines.checkBanAndAccess(testIp);
+    try {
+      caffeines.checkBanAndAccess(testIp);
+    } catch (BanException e) {
+      // ignore
+    }
 
-    // when
-    assertTrue(other.isOverAccessTime(IP, accessLimit));
+    // when & then
+    Thread.sleep(1_100);
+    assertDoesNotThrow(() -> caffeines.checkBanAndAccess(testIp));
   }
 }
