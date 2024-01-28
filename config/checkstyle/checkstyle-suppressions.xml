@@ -20,4 +20,8 @@
   <suppress id="PreferFlagsMeterRegistry" files="[\\/](DefaultFlagsProvider.java|Flags.java|FlagsProvider.java)" />
   <!-- Suppress PreferReentrantShortLock related checks in non-main code -->
   <suppress id="PreferReentrantShortLock" files="[\\/](examples|it|jmh|test)[\\/]" />
+  <!-- Suppress checks related with main method in integration tests and examples. -->
+  <suppressions>
+    <suppress files="/test/resources/*" checks="[a-zA-Z0-9]*"/>
+  </suppressions>
 </suppressions>
