@@ -17,12 +17,14 @@
 package org.epsec.core;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
-import static javax.tools.Diagnostic.Kind.NOTE;
 import static org.epsec.core.FullyQualifiedClassName.ASPECT;
 import static org.epsec.core.FullyQualifiedClassName.BEFORE;
 import static org.epsec.core.FullyQualifiedClassName.COMPONENT;
 import static org.epsec.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
+import static org.epsec.core.FullyQualifiedClassName.HTTP_SERVLET_REQUEST;
 import static org.epsec.core.FullyQualifiedClassName.JOIN_POINT;
+import static org.epsec.core.FullyQualifiedClassName.REQUEST_CONTEXT_HOLDER;
+import static org.epsec.core.FullyQualifiedClassName.SERVLET_REQUEST_ATTRIBUTES;
 import static org.epsec.core.FullyQualifiedClassName.isWebAnnotation;
 
 import java.io.IOException;
@@ -37,7 +39,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
-import org.epsec.engine.Caffeines;
+import org.epsec.engine.MethodBanManager;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
@@ -80,33 +82,24 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private void processMethodBan(Element element) {
-    processingEnv.getMessager().printMessage(NOTE, "MethodBan Annotation Processing now ", element);
-
     generateEnableAopClass(element);
     generateMethodBanAspect(element);
   }
 
   private void generateMethodBanAspect(Element element) {
-    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
-    processingEnv.getMessager().printMessage(NOTE, methodBan.toString());
-
-    final Filer filer = processingEnv.getFiler();
-    final String fullPackageName = element.getEnclosingElement().toString();
-    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
-
     final ClassName before = ClassName.bestGuess(BEFORE.getName());
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-        .addMember("value", "$S", "@annotation(org.epsec.core.MethodBan)")
+        .addMember("value", "$S", "@annotation(%s)" .formatted(ClassName.get(MethodBan.class)))
         .build();
 
     final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp" + System.nanoTime())
-        .returns(String.class)
         .addModifiers(Modifier.PRIVATE)
+        .returns(String.class)
         .addCode(CodeBlock.builder()
             .addStatement("$T request = (($T) $T.getRequestAttributes()).getRequest()",
-                ClassName.bestGuess("jakarta.servlet.http.HttpServletRequest"),
-                ClassName.bestGuess("org.springframework.web.context.request.ServletRequestAttributes"),
-                ClassName.bestGuess("org.springframework.web.context.request.RequestContextHolder"))
+                ClassName.bestGuess(HTTP_SERVLET_REQUEST.getName()),
+                ClassName.bestGuess(SERVLET_REQUEST_ATTRIBUTES.getName()),
+                ClassName.bestGuess(REQUEST_CONTEXT_HOLDER.getName()))
             .addStatement("$T xForwardedForHeader = $L.getHeader($S)", String.class, "request",
                 "X-Forwarded-For")
             .beginControlFlow("if ($L == null)", "xForwardedForHeader")
@@ -116,14 +109,14 @@ public class MethodBanProcessor extends AbstractProcessor {
             .build())
         .build();
 
+    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
     final CodeBlock codes = CodeBlock.builder()
         .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
         .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
-        .addStatement("$T cache = new $T(packageName, methodName, $L, $L, $L, $S)",
-            Caffeines.class, Caffeines.class, methodBan.times(), methodBan.seconds(),
+        .addStatement("$T cache = new $T(packageName + methodName, $L, $L, $L, $S)",
+            MethodBanManager.class, MethodBanManager.class, methodBan.times(), methodBan.seconds(),
             methodBan.banSeconds(), methodBan.banMessage())
         .addStatement("$L.checkBanAndAccess($L())", "cache", getUserIpMethodSpec.name)
-        .addStatement("$T.out.println($S)", System.class, "hi")
         .build();
 
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
@@ -141,34 +134,31 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addMethod(getUserIpMethodSpec)
         .build();
 
+    final String fullPackageName = element.getEnclosingElement().toString();
+    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
+    saveJavaFile(originalPackageName, classSpec);
+  }
+
+  private void generateEnableAopClass(Element element) {
+    final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
+        .addModifiers(Modifier.PUBLIC)
+        .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
+        .addAnnotation(ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName()))
+        .build();
+
+    final String packageName = element.getEnclosingElement().toString();
+    saveJavaFile(packageName, enableAopClass);
+  }
+
+  private void saveJavaFile(String fullPackageName, TypeSpec classSpec) {
+    final Filer filer = processingEnv.getFiler();
+    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
     try {
       JavaFile.builder(originalPackageName, classSpec)
           .build()
           .writeTo(filer);
     } catch (IOException e) {
-      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
-    }
-  }
-
-  private void generateEnableAopClass(Element element) {
-    final ClassName component = ClassName.bestGuess(COMPONENT.getName());
-    final ClassName enableAspectJAutoProxy =
-        ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName());
-    final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
-        .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(component)
-        .addAnnotation(enableAspectJAutoProxy)
-        .build();
-
-    final Filer filer = processingEnv.getFiler();
-    final String fullPackageName = element.getEnclosingElement().toString();
-    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
-    try {
-      JavaFile.builder(originalPackageName, enableAopClass)
-          .build()
-          .writeTo(filer);
-    } catch (IOException e) {
-      processingEnv.getMessager().printMessage(ERROR, "Fatal error", element);
+      processingEnv.getMessager().printMessage(ERROR, "Fatal error" + e.getMessage());
     }
   }
 

@@ -20,68 +20,49 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.util.StringUtils;
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
- * MemCache Factory.
+ * MethodBanManager.
  * @author PENEKhun
  */
-public class Caffeines implements MemCache {
+public class MethodBanManager implements MethodBanInterface {
 
   private final Fqcn fqcn;
   private final int times;
-  private final int seconds;
-  private final int banSeconds;
   private final String banMessage;
   private static final HashMap<Fqcn, Cache<String, Integer>> accessCache = new HashMap<>();
   private static final HashMap<Fqcn, Cache<String, LocalDateTime>> banCache = new HashMap<>();
-  private int defaultMaximumSize = 1_000_00;
 
   /**
    * Constructor.
+   *
+   * @param packageWithMethod package with method (e.g. org.epsec.engine.method1)
+   * @param times             times to access (must be greater than 1)
+   * @param seconds           seconds to access (must be greater than 0)
+   * @param banSeconds        ban seconds (must be greater than 0)
+   * @param banMessage        ban message (must have text)
    */
-  public Caffeines(String fullPackage, String methodName, int times, int seconds, int banSeconds,
+  public MethodBanManager(String packageWithMethod, int times, int seconds, int banSeconds,
       String banMessage) {
-    assert times >= 2;
-    assert seconds >= 1;
-    assert banSeconds >= 1;
-    assert StringUtils.hasText(fullPackage);
-    assert StringUtils.hasText(methodName);
-    assert StringUtils.hasText(banMessage);
-
     this.times = times;
-    this.seconds = seconds;
-    this.banSeconds = banSeconds;
     this.banMessage = banMessage;
-    this.fqcn = new Fqcn(fullPackage, methodName);
+    this.fqcn = new Fqcn(packageWithMethod);
 
-    accessCache.putIfAbsent(fqcn, Caffeine.newBuilder()
-        .maximumSize(this.defaultMaximumSize)
-        .expireAfterWrite(this.seconds, TimeUnit.SECONDS)
+    final int defaultMaximumSize = 1_000_00;
+    accessCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
+        .maximumSize(defaultMaximumSize)
+        .expireAfterWrite(seconds, TimeUnit.SECONDS)
         .build());
-
-    banCache.putIfAbsent(fqcn, Caffeine.newBuilder()
-        .maximumSize(this.defaultMaximumSize)
-        .expireAfterWrite(this.banSeconds, TimeUnit.SECONDS)
-        .evictionListener((key, value, cause) -> {
-          if (cause.wasEvicted()) {
-            accessCache.get(fqcn).invalidate(String.valueOf(key));
-          }
-        })
+    banCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
+        .maximumSize(defaultMaximumSize)
+        .expireAfterWrite(banSeconds, TimeUnit.SECONDS)
         .build());
-  }
-
-  private void changeDefaultMaximumSize(int size) {
-    this.defaultMaximumSize = size;
   }
 
   @Override
   public void checkBanAndAccess(String ipAddress) throws BanException {
-    assert StringUtils.hasText(ipAddress);
-
     final Cache<String, Integer> accessLog = accessCache.get(fqcn);
     final Cache<String, LocalDateTime> banLog = banCache.get(fqcn);
     if (banLog.getIfPresent(ipAddress) != null) {
