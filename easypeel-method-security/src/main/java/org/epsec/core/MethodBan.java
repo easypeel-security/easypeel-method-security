@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * MethodBan Annotation.
+ *
  * @author PENEKhun
  */
 @Target(ElementType.METHOD)
@@ -33,16 +34,24 @@ public @interface MethodBan {
    * The number of times the method can be called within the time period.
    */
   int times() default 5;
+
   /**
    * The time period in seconds.
    */
   int seconds() default 60;
+
   /**
    * The number of seconds to ban the user from calling the method.
    */
   int banSeconds() default 60;
+
   /**
    * The message to pass when the user is banned.
    */
   String banMessage() default "You have been banned from calling this method. Please try again later.";
+
+  /**
+   * If you are using a version prior to the namespace change to Jakarta, please set this option to true.
+   */
+  boolean javax() default false;
 }
