@@ -30,7 +30,7 @@ public final class Fqcn {
   /**
    * Constructor.
    * @param fullPackage full package name (e.g. org.epsec.engine)
-   * @param methodName method name (e.g. method1)
+   * @param methodName  method name (e.g. method1)
    */
   public Fqcn(String fullPackage, String methodName) {
     if (!(StringUtils.hasText(fullPackage) && StringUtils.hasText(methodName))) {
