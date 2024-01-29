@@ -1,5 +1,10 @@
+plugins {
+	id "com.vanniktech.maven.publish" version "0.27.0"
+}
+
 apply from: 'lint.gradle'
 apply from: 'publishing.gradle'
+
 subprojects {
 	group = rootPackageName
 	version = projectVersion
