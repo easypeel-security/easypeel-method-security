@@ -26,7 +26,7 @@ public interface MethodBanInterface {
    * 1. Check if the number of visits exceeds the access time.
    * 2. if true, throw BanException.
    * 3. if false, increment the number of visits.
-   * @param ipAddress Ip address of the user accessed to api.
+   * @param ipAddress Ip address of the user accessed to api. (must have a value)
    * @throws BanException if the number of visits exceeds the access time.
    */
   void checkBanAndAccess(String ipAddress) throws BanException;

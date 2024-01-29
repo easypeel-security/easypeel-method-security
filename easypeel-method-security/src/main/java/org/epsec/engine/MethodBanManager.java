@@ -66,8 +66,6 @@ public class MethodBanManager implements MethodBanInterface {
 
   @Override
   public void checkBanAndAccess(String ipAddress) throws BanException {
-    assert StringUtils.hasText(ipAddress);
-
     final Cache<String, Integer> accessLog = accessCache.get(fqcn);
     final Cache<String, LocalDateTime> banLog = banCache.get(fqcn);
     if (banLog.getIfPresent(ipAddress) != null) {
