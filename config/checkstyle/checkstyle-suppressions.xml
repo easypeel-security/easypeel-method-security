@@ -22,4 +22,6 @@
   <suppress id="PreferReentrantShortLock" files="[\\/](examples|it|jmh|test)[\\/]" />
   <!-- Suppress checks related with integration tests. -->
   <suppress files="[\\/]resources\/before[\\/]" checks="[a-zA-Z0-9]*"/>
+  <!-- Suppress final Keyword related checks in non-main code. -->
+  <suppress id="FinalLocalVariable" files="[\\/](examples|test)[\\/]" />
 </suppressions>

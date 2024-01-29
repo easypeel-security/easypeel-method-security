@@ -64,6 +64,10 @@ public class MethodBanProcessor extends AbstractProcessor {
 
   @Override
   public SourceVersion getSupportedSourceVersion() {
+    if (processingEnv.getSourceVersion().compareTo(SourceVersion.RELEASE_8) < 0) {
+      processingEnv.getMessager().printMessage(ERROR, "MethodBan is only supported in Java 8 or higher.");
+    }
+
     return SourceVersion.latestSupported();
   }
 
@@ -74,20 +78,22 @@ public class MethodBanProcessor extends AbstractProcessor {
       if (isAlreadyProcessed) {
         break;
       }
+
+      final boolean isJavaxNamespace = element.getAnnotation(MethodBan.class).javax();
       checkValidMethodBan(element);
-      processMethodBan(element);
+      processMethodBan(element, isJavaxNamespace);
       isAlreadyProcessed = true;
     }
     return true;
   }
 
-  private void processMethodBan(Element element) {
+  private void processMethodBan(Element element, boolean isJavaxNamespace) {
     generateEnableAopClass(element);
-    generateMethodBanAspect(element);
+    generateMethodBanAspect(element, isJavaxNamespace);
   }
 
-  private void generateMethodBanAspect(Element element) {
-    final ClassName before = ClassName.bestGuess(BEFORE.getName());
+  private void generateMethodBanAspect(Element element, boolean isJavaxNamespace) {
+    final ClassName before = ClassName.bestGuess(BEFORE.getName(isJavaxNamespace));
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
         .addMember("value", "$S", "@annotation(%s)" .formatted(ClassName.get(MethodBan.class)))
         .build();
@@ -97,9 +103,9 @@ public class MethodBanProcessor extends AbstractProcessor {
         .returns(String.class)
         .addCode(CodeBlock.builder()
             .addStatement("$T request = (($T) $T.getRequestAttributes()).getRequest()",
-                ClassName.bestGuess(HTTP_SERVLET_REQUEST.getName()),
-                ClassName.bestGuess(SERVLET_REQUEST_ATTRIBUTES.getName()),
-                ClassName.bestGuess(REQUEST_CONTEXT_HOLDER.getName()))
+                ClassName.bestGuess(HTTP_SERVLET_REQUEST.getName(isJavaxNamespace)),
+                ClassName.bestGuess(SERVLET_REQUEST_ATTRIBUTES.getName(isJavaxNamespace)),
+                ClassName.bestGuess(REQUEST_CONTEXT_HOLDER.getName(isJavaxNamespace)))
             .addStatement("$T xForwardedForHeader = $L.getHeader($S)", String.class, "request",
                 "X-Forwarded-For")
             .beginControlFlow("if ($L == null)", "xForwardedForHeader")
@@ -122,14 +128,14 @@ public class MethodBanProcessor extends AbstractProcessor {
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
-        .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
+        .addParameter(ClassName.bestGuess(JOIN_POINT.getName(isJavaxNamespace)), "joinPoint")
         .addCode(codes)
         .build();
 
     final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(ClassName.bestGuess(ASPECT.getName()))
-        .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
+        .addAnnotation(ClassName.bestGuess(ASPECT.getName(isJavaxNamespace)))
+        .addAnnotation(ClassName.bestGuess(COMPONENT.getName(isJavaxNamespace)))
         .addMethod(methodSpec)
         .addMethod(getUserIpMethodSpec)
         .build();
@@ -142,8 +148,8 @@ public class MethodBanProcessor extends AbstractProcessor {
   private void generateEnableAopClass(Element element) {
     final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
-        .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
-        .addAnnotation(ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName()))
+        .addAnnotation(ClassName.bestGuess(COMPONENT.getName(false)))
+        .addAnnotation(ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName(false)))
         .build();
 
     final String packageName = element.getEnclosingElement().toString();
