@@ -16,6 +16,8 @@
 
 package org.epsec.engine;
 
+import java.util.Arrays;
+
 import org.springframework.util.StringUtils;
 
 /**
@@ -39,6 +41,25 @@ public final class Fqcn {
 
     this.fullPackage = fullPackage;
     this.methodName = methodName;
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param fqcn fully qualified class name (e.g. org.epsec.engine.method1)
+   */
+  public Fqcn(String fqcn) {
+    if (!StringUtils.hasText(fqcn)) {
+      throw new IllegalArgumentException("Cannot create Fqcn with empty string");
+    }
+
+    final String[] split = fqcn.split("\\.");
+
+    if (split.length < 2 || Arrays.stream(split).anyMatch(s -> !StringUtils.hasText(s))) {
+      throw new IllegalArgumentException("Wrong format of fqcn");
+    }
+    this.fullPackage = Arrays.stream(split).limit(split.length - 1).reduce((a, b) -> a + "." + b).get();
+    this.methodName = split[split.length - 1];
   }
 
   /**

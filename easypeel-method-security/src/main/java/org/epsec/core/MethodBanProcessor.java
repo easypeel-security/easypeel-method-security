@@ -113,7 +113,7 @@ public class MethodBanProcessor extends AbstractProcessor {
     final CodeBlock codes = CodeBlock.builder()
         .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
         .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
-        .addStatement("$T cache = new $T(packageName, methodName, $L, $L, $L, $S)",
+        .addStatement("$T cache = new $T(packageName + methodName, $L, $L, $L, $S)",
             MethodBanManager.class, MethodBanManager.class, methodBan.times(), methodBan.seconds(),
             methodBan.banSeconds(), methodBan.banMessage())
         .addStatement("$L.checkBanAndAccess($L())", "cache", getUserIpMethodSpec.name)

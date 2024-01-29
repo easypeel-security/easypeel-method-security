@@ -40,7 +40,7 @@ public class MethodBanManager implements MethodBanInterface {
   /**
    * Constructor.
    */
-  public MethodBanManager(String fullPackage, String methodName, int times, int seconds, int banSeconds,
+  public MethodBanManager(String packageWithMethod, int times, int seconds, int banSeconds,
       String banMessage) {
     assert times >= 2;
     assert seconds >= 1;
@@ -51,14 +51,14 @@ public class MethodBanManager implements MethodBanInterface {
 
     this.times = times;
     this.banMessage = banMessage;
-    this.fqcn = new Fqcn(fullPackage, methodName);
+    this.fqcn = new Fqcn(packageWithMethod);
 
     final int defaultMaximumSize = 1_000_00;
-    accessCache.putIfAbsent(fqcn, Caffeine.newBuilder()
+    accessCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
         .maximumSize(defaultMaximumSize)
         .expireAfterWrite(seconds, TimeUnit.SECONDS)
         .build());
-    banCache.putIfAbsent(fqcn, Caffeine.newBuilder()
+    banCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
         .maximumSize(defaultMaximumSize)
         .expireAfterWrite(banSeconds, TimeUnit.SECONDS)
         .build());

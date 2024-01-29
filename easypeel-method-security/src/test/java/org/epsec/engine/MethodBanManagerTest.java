@@ -28,7 +28,7 @@ class MethodBanManagerTest {
   @Test
   void checkBanAndAccessThrowsWhenExceedAccess() {
     // given
-    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 3, 2, 1, "You are banned");
+    final MethodBanManager caffeines = new MethodBanManager("org.test.method", 3, 2, 1, "You are banned");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
     caffeines.checkBanAndAccess(testIp);
@@ -42,7 +42,7 @@ class MethodBanManagerTest {
   @Test
   void checkBanAndAccessDoesNotThrows() {
     // given
-    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 3, 1, 1, "test");
+    final MethodBanManager caffeines = new MethodBanManager("org.test.method", 3, 1, 1, "test");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
 
@@ -53,7 +53,7 @@ class MethodBanManagerTest {
   @Test
   void banCacheExpireWorking() throws Exception {
     // given
-    final MethodBanManager caffeines = new MethodBanManager("org.test", "method", 2, 10, 1, "test");
+    final MethodBanManager caffeines = new MethodBanManager("org.test.method", 2, 10, 1, "test");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
     try {
