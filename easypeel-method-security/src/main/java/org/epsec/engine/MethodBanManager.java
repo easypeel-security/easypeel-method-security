@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.util.StringUtils;
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 
@@ -39,16 +37,15 @@ public class MethodBanManager implements MethodBanInterface {
 
   /**
    * Constructor.
+   *
+   * @param packageWithMethod package with method (e.g. org.epsec.engine.method1)
+   * @param times             times to access (must be greater than 1)
+   * @param seconds           seconds to access (must be greater than 0)
+   * @param banSeconds        ban seconds (must be greater than 0)
+   * @param banMessage        ban message (must have text)
    */
   public MethodBanManager(String packageWithMethod, int times, int seconds, int banSeconds,
       String banMessage) {
-    assert times >= 2;
-    assert seconds >= 1;
-    assert banSeconds >= 1;
-    assert StringUtils.hasText(fullPackage);
-    assert StringUtils.hasText(methodName);
-    assert StringUtils.hasText(banMessage);
-
     this.times = times;
     this.banMessage = banMessage;
     this.fqcn = new Fqcn(packageWithMethod);
