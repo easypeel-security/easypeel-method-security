@@ -1,5 +1,7 @@
 plugins {
+	id 'java-library'
 	id "com.vanniktech.maven.publish" version "0.27.0"
+	id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 apply from: 'lint.gradle'
@@ -17,6 +19,7 @@ subprojects {
 	apply plugin: 'jacoco'
 
 	dependencies {
+		project(':easypeel-method-security')
 		testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"

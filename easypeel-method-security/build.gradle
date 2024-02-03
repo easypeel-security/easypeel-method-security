@@ -1,22 +1,39 @@
-plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-}
+apply plugin: 'java-library'
+pluginManager.apply("com.github.johnrengelman.shadow")
+pluginManager.apply("com.vanniktech.maven.publish")
 
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
-    compileOnly "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
     implementation "org.springframework:spring-context:${springContextVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 }
 
 shadowJar {
-    archiveBaseName.set(project.name)
-    archiveClassifier.set('')
-    archiveVersion.set("${version}")
-    configurations = [project.configurations.compileClasspath]
-    dependencies {
-        exclude(dependency -> {
-            return !(dependency.name.contains("org.aspectj") || dependency.name.contains("org.springframework.stereotype") || dependency.name.contains("com.github.ben-manes"))
-        })
+    archiveBaseName.set(projectName)
+    archiveVersion.set(projectVersion)
+    archiveClassifier.set("")
+    archiveExtension.set("jar")
+}
+
+jar.enabled = false
+
+tasks.register('sourcesJar', Jar) {
+    from sourceSets.main.allSource
+    archiveClassifier.set("sources")
+}
+
+tasks.register('javadocJar', Jar) {
+    from javadoc
+    archiveClassifier.set("javadoc")
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            artifact shadowJar
+            artifact sourcesJar
+            artifact javadocJar
+        }
     }
 }
