@@ -3,8 +3,10 @@ pluginManager.apply("com.vanniktech.maven.publish")
 
 mavenPublishing {
     coordinates(rootPackageName, rootProject.name, projectVersion)
-    if (!project.hasProperty('noSign')) {
+    if (project.hasProperty('signing.keyId')) {
         signAllPublications()
+    } else {
+        System.out.println("[Warning] Deploying without running signing because there is no environment variable about 'signing'. This message should only be output on Maven Local deployments.")
     }
 
     pom {
