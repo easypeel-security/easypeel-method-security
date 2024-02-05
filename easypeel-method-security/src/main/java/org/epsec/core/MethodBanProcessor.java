@@ -94,7 +94,7 @@ public class MethodBanProcessor extends AbstractProcessor {
   private void generateMethodBanAspect(Element element) {
     final ClassName before = ClassName.bestGuess(BEFORE.getName());
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-        .addMember("value", "$S", "@annotation(%s)" .formatted(ClassName.get(MethodBan.class)))
+        .addMember("value", "$S", "@annotation(%s)".formatted(ClassName.get(MethodBan.class)))
         .build();
 
     final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp" + System.nanoTime())
