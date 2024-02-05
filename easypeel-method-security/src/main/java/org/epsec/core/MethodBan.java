@@ -49,9 +49,4 @@ public @interface MethodBan {
    * The message to pass when the user is banned.
    */
   String banMessage() default "You have been banned from calling this method. Please try again later.";
-
-  /**
-   * If you are using a version prior to the namespace change to Jakarta, please set this option to true.
-   */
-  boolean javax() default false;
 }
