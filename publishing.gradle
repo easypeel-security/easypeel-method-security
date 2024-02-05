@@ -27,6 +27,7 @@ mavenPublishing {
     pom {
         name = projectName
         description = 'Configure method-level security easily in your RestController'
+        inceptionYear = '2024'
         url = 'https://github.com/easypeel-security/easypeel-method-security/'
 
         licenses {
@@ -41,6 +42,7 @@ mavenPublishing {
                 id = 'PENEKhun'
                 name = 'MoonSeonghun'
                 email = 'penekhun@gmail.com'
+                url = 'https://github.com/PENEKhun'
             }
         }
 
