@@ -39,28 +39,8 @@ class FullyQualifiedClassNameTest {
       "org.springframework.web.context.request.ServletRequestAttributes, SERVLET_REQUEST_ATTRIBUTES",
       "org.springframework.web.context.request.RequestContextHolder, REQUEST_CONTEXT_HOLDER"
   })
-  void getNameReturnWellWhenJakarta(String expected, FullyQualifiedClassName fqcn) {
-    assertEquals(expected, fqcn.getName(false));
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-      "org.springframework.web.bind.annotation.GetMapping, GET_MAPPING",
-      "org.springframework.web.bind.annotation.PostMapping, POST_MAPPING",
-      "org.springframework.web.bind.annotation.PutMapping, PUT_MAPPING",
-      "org.springframework.web.bind.annotation.DeleteMapping, DELETE_MAPPING",
-      "org.springframework.web.bind.annotation.PatchMapping, PATCH_MAPPING",
-      "org.springframework.stereotype.Component, COMPONENT",
-      "org.springframework.context.annotation.EnableAspectJAutoProxy, ENABLE_ASPECT_JAUTO_PROXY",
-      "org.aspectj.lang.JoinPoint, JOIN_POINT",
-      "org.aspectj.lang.annotation.Aspect, ASPECT",
-      "org.aspectj.lang.annotation.Before, BEFORE",
-      "javax.servlet.http.HttpServletRequest, HTTP_SERVLET_REQUEST",
-      "org.springframework.web.context.request.ServletRequestAttributes, SERVLET_REQUEST_ATTRIBUTES",
-      "org.springframework.web.context.request.RequestContextHolder, REQUEST_CONTEXT_HOLDER"
-  })
-  void getNameReturnWellWhenJavax(String expected, FullyQualifiedClassName fqcn) {
-    assertEquals(expected, fqcn.getName(true));
+  void getNameReturnWell(String expected, FullyQualifiedClassName fqcn) {
+    assertEquals(expected, fqcn.getName());
   }
 
   @ParameterizedTest

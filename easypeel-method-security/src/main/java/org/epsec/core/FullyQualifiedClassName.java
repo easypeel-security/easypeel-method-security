@@ -45,14 +45,9 @@ public enum FullyQualifiedClassName {
   /**
    * Get the name of the Fully Qualified Class Name.
    *
-   * @param isJavax true if the target FQCN is JavaX EE, false if the target Jakarta EE. (more info: <a
-   *                  href="https://jakarta.ee/blogs/javax-jakartaee-namespace-ecosystem-progress/">article</a>)
    * @return the name of the FQCN string
    */
-  public String getName(boolean isJavax) {
-    if (isJavax) {
-      return this.name.replace("jakarta", "javax");
-    }
+  public String getName() {
     return this.name;
   }
 

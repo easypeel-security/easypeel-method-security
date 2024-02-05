@@ -35,10 +35,10 @@ import com.google.testing.compile.JavaFileObjects;
 class MethodBanProcessorTest {
 
   @Test
-  void methodBanNotSupportUnderJava8() {
+  void methodBanNotSupportUnderJava17() {
     // given
     JavaFileObject src = JavaFileObjects.forResource("before/MethodBanHappy.java");
-    String javaVersion = "7";
+    String javaVersion = "16";
 
     // when
     Compilation compilation = javac()
@@ -47,7 +47,7 @@ class MethodBanProcessorTest {
         .compile(src);
 
     // then
-    assertThat(compilation).hadErrorContaining("MethodBan is only supported in Java 8 or higher.");
+    assertThat(compilation).hadErrorContaining("MethodBan is only supported in Java 17 or higher.");
   }
 
   @Test
