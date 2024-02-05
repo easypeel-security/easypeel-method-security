@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'java-library'
-pluginManager.apply("com.github.johnrengelman.shadow")
+pluginManager.apply("io.github.goooler.shadow")
+//pluginManager.apply("com.github.johnrengelman.shadow")
 pluginManager.apply("com.vanniktech.maven.publish")
 
 java {
