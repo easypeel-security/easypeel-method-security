@@ -140,9 +140,8 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addMethod(getUserIpMethodSpec)
         .build();
 
-    final String fullPackageName = element.getEnclosingElement().toString();
-    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
-    saveJavaFile(originalPackageName, classSpec);
+    final String packageName = element.getEnclosingElement().toString();
+    saveJavaFile(packageName, classSpec);
   }
 
   private void generateEnableAopClass(Element element) {
