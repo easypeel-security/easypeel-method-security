@@ -10,10 +10,7 @@ java {
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
     implementation "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
-    implementation "org.springframework:spring-context:${springContextVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
-    implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 }
 
 shadowJar {
