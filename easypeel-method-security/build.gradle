@@ -19,6 +19,10 @@ shadowJar {
     archiveVersion.set(projectVersion)
     archiveClassifier.set("")
     archiveExtension.set("jar")
+
+    relocate("com.squareup.javapoet", "org.epsec.javapoet")
+    relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
+    relocate("org.aspectj", "org.epsec.aspectj")
 }
 
 jar.enabled = false
