@@ -22,7 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * MethodBan Annotation.
+ * MethodBan Annotation. By default, this annotation supports method-level blocking based on IP. If you want to
+ * add other filtering besides IP (like Security Authentication), check out {@link ParameterFilter}.
  *
  * @author PENEKhun
  */
@@ -49,4 +50,12 @@ public @interface MethodBan {
    * The message to pass when the user is banned.
    */
   String banMessage() default "You have been banned from calling this method. Please try again later.";
+
+  /**
+   * When using public networks, users may be surprised by unintentional blocking. To counteract this, This
+   * option narrows down the blocked targets in IP-based blocking. The default is Disabled.
+   *
+   * @see ParameterFilter
+   */
+  ParameterFilter additionalFilter() default @ParameterFilter(isEnabled = false, target = "");
 }
