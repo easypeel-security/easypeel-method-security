@@ -60,6 +60,23 @@ class MethodBanProcessorTest {
   }
 
   @ParameterizedTest
+  @MethodSource("happyCaseSet")
+  void testMethodBanProcessorHappy(String fileName) {
+    JavaFileObject src = JavaFileObjects.forResource("before/" + fileName);
+    Compilation compilation = javac()
+        .withProcessors(new MethodBanProcessor())
+        .compile(src);
+    assertThat(compilation).succeededWithoutWarnings();
+  }
+
+  @SuppressWarnings("checkstyle:LineLength")
+  static Stream<Arguments> happyCaseSet() {
+    return Stream.of(
+        Arguments.of("MethodBanWithAuthenticationArgumentMustBeExist.java")
+    );
+  }
+
+  @ParameterizedTest
   @MethodSource("wrongCaseSet")
   void testMethodBanProcessor(String fileName, String expectedErrorMessage) {
     JavaFileObject src = JavaFileObjects.forResource("before/" + fileName);
@@ -81,7 +98,11 @@ class MethodBanProcessorTest {
         Arguments.of("MethodBanBanSecondsMustBeGreaterThanZero.java",
             "banSeconds must be greater than 0"),
         Arguments.of("MethodBanMustBePublicMethod.java",
-            "Method must be public")
+            "Method must be public"),
+        Arguments.of("MethodBanWithAuthenticationMustHaveName.java",
+            "name must be provided"),
+        Arguments.of("MethodBanWithAuthenticationArgumentDoesNotExist.java",
+            "Authentication argument is not exist in method parameters. Please check name argument.")
     );
   }
 }
