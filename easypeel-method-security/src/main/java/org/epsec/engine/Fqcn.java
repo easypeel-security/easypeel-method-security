@@ -18,7 +18,7 @@ package org.epsec.engine;
 
 import java.util.Arrays;
 
-import org.springframework.util.StringUtils;
+import org.epsec.util.StringUtils;
 
 /**
  * Fully Qualified Class Name Data Structure.
