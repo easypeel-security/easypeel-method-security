@@ -24,7 +24,7 @@ specific methods, which is activated when certain traffic thresholds are reached
 For gradle,
 
 ```groovy
-annotationProcessor 'io.github.easypeel-security:easypeel-method-security:0.0.1'
+annotationProcessor 'io.github.easypeel-security:easypeel-method-security:{{VERSION}}'
 ```
 
 For maven,
@@ -34,7 +34,7 @@ For maven,
 <dependency>
   <groupId>io.github.easypeel-security</groupId>
   <artifactId>easypeel-method-security</artifactId>
-  <version>0.0.1</version>
+  <version>{{VERSION}}</version>
   <scope>provided</scope>
 </dependency>
 ```
