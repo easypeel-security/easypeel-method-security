@@ -28,3 +28,49 @@ followed. (It is more loosely enforced in test code).
 - A few unit tests would help a lot as well - someone has to do it.
 - Verification tasks, including tests and Checkstyle, can be executed by running ./gradlew check
   from the project root.
+
+## For your first contribution
+
+- Run all tests (including style checks)
+
+```bash
+./gradlew check
+```
+
+- Deploy to local maven repository
+
+Run the following command to deploy the library to your local maven repository
+
+```bash
+./gradlew publishShadowPublicationToMavenLocal
+```
+
+and then add the following to your `build.gradle` file (for test locally)
+
+```groovy
+repositories {
+    mavenLocal() // add this line
+    // ...
+}
+```
+
+<!--
+
+## For maintainers
+
+- Set up environment variables
+```bash
+export ORG_GRADLE_PROJECT_mavenCentralUsername=""
+export ORG_GRADLE_PROJECT_mavenCentralPassword=""
+export ORG_GRADLE_PROJECT_signingInMemoryKey=""
+export ORG_GRADLE_PROJECT_signingInMemoryKeyId=""
+export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=""
+```
+
+- Deploy to maven central manually
+
+```bash
+./gradlew publishShadowPublicationToMavenCentralRepository -PRELEASE_SIGNING_ENABLED=true
+```
+
+-->

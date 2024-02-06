@@ -46,6 +46,8 @@ public String hello() {
 > Once a user accesses an API `3 times` within `10 seconds`, they are prevented from accessing the
 > same API for `1000 banSeconds`.
 
+### 2. Another Feature is Coming Soon!
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
