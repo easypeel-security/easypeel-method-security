@@ -10,7 +10,6 @@ java {
 
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 }
 
@@ -22,7 +21,6 @@ shadowJar {
 
     relocate("com.squareup.javapoet", "org.epsec.javapoet")
     relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
-    relocate("org.aspectj", "org.epsec.aspectj")
 }
 
 jar.enabled = false
