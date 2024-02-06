@@ -15,6 +15,10 @@ specific methods, which is activated when certain traffic thresholds are reached
 > Since it's still in beta, the software currently has limited features. If you're interested in
 > following the project's progress, please press the ⭐ button to stay updated.
 
+## Requirements
+
+> ⚠️ **Requires Spring Boot 3.x**
+
 ## Dependencies
 
 For gradle,
