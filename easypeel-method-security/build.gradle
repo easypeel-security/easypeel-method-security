@@ -10,7 +10,7 @@ java {
 
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
-    implementation "org.springframework.boot:spring-boot-starter-aop:${springAopVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
 }
 

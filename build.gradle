@@ -29,8 +29,8 @@ subprojects {
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 		testImplementation "org.assertj:assertj-core:${assertjVersion}"
 		testImplementation "com.google.testing.compile:compile-testing:${compileTestingVersion}"
-		testImplementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-		testImplementation "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
+		testImplementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
+		testImplementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
 	}
 
 	test {
@@ -44,16 +44,4 @@ subprojects {
 			xml.required.set(true)
 		}
 	}
-
-	shadowJar {
-		archiveBaseName.set(easypeelMethodSecurity)
-		archiveVersion.set(easypeelMethodSecurityVersion)
-		archiveClassifier.set("")
-		archiveExtension.set("jar")
-
-		relocate("com.squareup.javapoet", "org.epsec.javapoet")
-		relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
-		relocate("org.aspectj", "org.epsec.aspectj")
-	}
-
 }
