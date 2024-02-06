@@ -6,11 +6,15 @@ plugins {
 }
 
 apply from: 'lint.gradle'
-apply from: 'publishing.gradle'
+
+java {
+	withJavadocJar()
+	withSourcesJar()
+}
 
 subprojects {
 	group = rootPackageName
-	version = projectVersion
+	version = easypeelMethodSecurityVersion
 
 	repositories {
 		mavenCentral()
@@ -20,7 +24,6 @@ subprojects {
 	apply plugin: 'jacoco'
 
 	dependencies {
-		project(':easypeel-method-security')
 		testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
@@ -41,4 +44,16 @@ subprojects {
 			xml.required.set(true)
 		}
 	}
+
+	shadowJar {
+		archiveBaseName.set(easypeelMethodSecurity)
+		archiveVersion.set(easypeelMethodSecurityVersion)
+		archiveClassifier.set("")
+		archiveExtension.set("jar")
+
+		relocate("com.squareup.javapoet", "org.epsec.javapoet")
+		relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
+		relocate("org.aspectj", "org.epsec.aspectj")
+	}
+
 }

@@ -15,8 +15,8 @@ dependencies {
 }
 
 shadowJar {
-    archiveBaseName.set(projectName)
-    archiveVersion.set(projectVersion)
+    archiveBaseName.set(easypeelMethodSecurity)
+    archiveVersion.set(easypeelMethodSecurityVersion)
     archiveClassifier.set("")
     archiveExtension.set("jar")
 
@@ -27,22 +27,45 @@ shadowJar {
 
 jar.enabled = false
 
-tasks.register('sourcesJar', Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set("sources")
-}
-
-tasks.register('javadocJar', Jar) {
-    from javadoc
-    archiveClassifier.set("javadoc")
-}
-
 publishing {
     publications {
         shadow(MavenPublication) {
             artifact shadowJar
-            artifact sourcesJar
-            artifact javadocJar
+            from components.java
+        }
+    }
+}
+
+
+mavenPublishing {
+    coordinates(rootPackageName, easypeelMethodSecurity, easypeelMethodSecurityVersion)
+
+    pom {
+        name = easypeelMethodSecurity
+        description = 'Configure method-level security easily in your RestController'
+        inceptionYear = '2024'
+        url = 'https://github.com/easypeel-security/easypeel-method-security/'
+
+        licenses {
+            license {
+                name = 'The Apache License, Version 2.0'
+                url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+        }
+
+        developers {
+            developer {
+                id = 'PENEKhun'
+                name = 'MoonSeonghun'
+                email = 'penekhun@gmail.com'
+                url = 'https://github.com/PENEKhun'
+            }
+        }
+
+        scm {
+            connection = 'scm:git:git://github.com/easypeel-security/easypeel-method-security.git'
+            developerConnection = 'scm:git:ssh://github.com/easypeel-security/easypeel-method-security.git'
+            url = 'https://github.com/easypeel-security/easypeel-method-security'
         }
     }
 }
