@@ -59,6 +59,7 @@ import com.squareup.javapoet.TypeSpec;
  *
  * @author PENEKhun
  */
+@SuppressWarnings("all")
 public class MethodBanProcessor extends AbstractProcessor {
 
   private boolean isAlreadyProcessed;
@@ -79,7 +80,7 @@ public class MethodBanProcessor extends AbstractProcessor {
 
   @Override
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-    final Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(MethodBan.class);
+    Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(MethodBan.class);
     for (Element element : elements) {
       if (isAlreadyProcessed) {
         break;
@@ -103,7 +104,7 @@ public class MethodBanProcessor extends AbstractProcessor {
     TypeSpec banAspectClass = generateMethodBanAspect(element, banWith);
 
     // get the package name
-    final String fullPackageName = element.getEnclosingElement().toString();
+    String fullPackageName = element.getEnclosingElement().toString();
     saveJavaFile(fullPackageName, enableAopClass);
     saveJavaFile(fullPackageName, banAspectClass);
   }
@@ -131,12 +132,12 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private TypeSpec generateMethodBanAspect(Element element, ParameterFilter banWith) {
-    final ClassName before = ClassName.bestGuess(BEFORE.getName());
-    final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
+    ClassName before = ClassName.bestGuess(BEFORE.getName());
+    AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
         .addMember("value", "$S", "@annotation(%s)".formatted(ClassName.get(MethodBan.class)))
         .build();
 
-    final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp")
+    MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp")
         .addModifiers(Modifier.PRIVATE)
         .returns(String.class)
         .addCode(CodeBlock.builder()
@@ -153,7 +154,7 @@ public class MethodBanProcessor extends AbstractProcessor {
             .build())
         .build();
 
-    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
+    MethodBan methodBan = element.getAnnotation(MethodBan.class);
     Builder codes = CodeBlock.builder()
         .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
         .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
@@ -178,14 +179,14 @@ public class MethodBanProcessor extends AbstractProcessor {
       codes.addStatement("$L.checkBanAndAccess($L())", "cache", "getUserIp");
     }
 
-    final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
+    MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
         .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
         .addCode(codes.build())
         .build();
 
-    final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
+    TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(ClassName.bestGuess(ASPECT.getName()))
         .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
@@ -205,8 +206,8 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private void saveJavaFile(String fullPackageName, TypeSpec classSpec) {
-    final Filer filer = processingEnv.getFiler();
-    final String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
+    Filer filer = processingEnv.getFiler();
+    String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
     try {
       JavaFile.builder(originalPackageName, classSpec)
           .build()
@@ -217,7 +218,7 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private void checkValidMethodBan(Element element) {
-    final MethodBan methodBan = element.getAnnotation(MethodBan.class);
+    MethodBan methodBan = element.getAnnotation(MethodBan.class);
     if (methodBan.times() <= 1) {
       processingEnv.getMessager().printMessage(ERROR, "times must be greater than 1", element);
     }
