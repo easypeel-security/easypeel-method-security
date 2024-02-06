@@ -18,6 +18,7 @@ package org.epsec.core;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.epsec.core.FullyQualifiedClassName.ASPECT;
+import static org.epsec.core.FullyQualifiedClassName.ASPECT_METHOD_SIGNATURE;
 import static org.epsec.core.FullyQualifiedClassName.BEFORE;
 import static org.epsec.core.FullyQualifiedClassName.COMPONENT;
 import static org.epsec.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
@@ -28,6 +29,7 @@ import static org.epsec.core.FullyQualifiedClassName.SERVLET_REQUEST_ATTRIBUTES;
 import static org.epsec.core.FullyQualifiedClassName.isWebAnnotation;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -36,14 +38,18 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 
 import org.epsec.engine.MethodBanManager;
+import org.epsec.util.StringUtils;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.CodeBlock.Builder;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -87,17 +93,50 @@ public class MethodBanProcessor extends AbstractProcessor {
   }
 
   private void processMethodBan(Element element) {
-    generateEnableAopClass(element);
-    generateMethodBanAspect(element);
+    MethodBan methodBan = element.getAnnotation(MethodBan.class);
+    ParameterFilter banWith = methodBan.additionalFilter();
+    if (banWith.isEnabled()) {
+      checkValidBanWith(element, methodBan.additionalFilter().target());
+    }
+
+    TypeSpec enableAopClass = generateEnableAopClass(element);
+    TypeSpec banAspectClass = generateMethodBanAspect(element, banWith);
+
+    // get the package name
+    final String fullPackageName = element.getEnclosingElement().toString();
+    saveJavaFile(fullPackageName, enableAopClass);
+    saveJavaFile(fullPackageName, banAspectClass);
   }
 
-  private void generateMethodBanAspect(Element element) {
+  private void checkValidBanWith(Element element, String authenticationArgumentName) {
+    if (!StringUtils.hasText(authenticationArgumentName)) {
+      processingEnv.getMessager().printMessage(ERROR, "name must be provided", element);
+    }
+
+    ExecutableElement methodElement = (ExecutableElement) element;
+    List<? extends VariableElement> parameters = methodElement.getParameters();
+
+    boolean isExist = false;
+    for (VariableElement parameter : parameters) {
+      if (parameter.getSimpleName().toString().equals(authenticationArgumentName)) {
+        isExist = true;
+        break;
+      }
+    }
+
+    if (!isExist) {
+      processingEnv.getMessager().printMessage(ERROR,
+          "Authentication argument is not exist in method parameters. Please check name argument.", element);
+    }
+  }
+
+  private TypeSpec generateMethodBanAspect(Element element, ParameterFilter banWith) {
     final ClassName before = ClassName.bestGuess(BEFORE.getName());
     final AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
         .addMember("value", "$S", "@annotation(%s)".formatted(ClassName.get(MethodBan.class)))
         .build();
 
-    final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp" + System.nanoTime())
+    final MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp")
         .addModifiers(Modifier.PRIVATE)
         .returns(String.class)
         .addCode(CodeBlock.builder()
@@ -115,20 +154,35 @@ public class MethodBanProcessor extends AbstractProcessor {
         .build();
 
     final MethodBan methodBan = element.getAnnotation(MethodBan.class);
-    final CodeBlock codes = CodeBlock.builder()
+    Builder codes = CodeBlock.builder()
         .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
         .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
         .addStatement("$T cache = new $T(packageName + methodName, $L, $L, $L, $S)",
             MethodBanManager.class, MethodBanManager.class, methodBan.times(), methodBan.seconds(),
-            methodBan.banSeconds(), methodBan.banMessage())
-        .addStatement("$L.checkBanAndAccess($L())", "cache", getUserIpMethodSpec.name)
-        .build();
+            methodBan.banSeconds(), methodBan.banMessage());
+
+    if (banWith.isEnabled()) {
+      codes.addStatement("$T banWith", String.class)
+          .addStatement("$T[] parameterNames = (($T) $L.getSignature()).getParameterNames()",
+              String.class, ClassName.bestGuess(ASPECT_METHOD_SIGNATURE.getName()), "joinPoint")
+          .addStatement("$T[] arguments = $L.getArgs()", Object.class, "joinPoint")
+          .beginControlFlow("for (int i = 0; i < parameterNames.length; i++)")
+          .beginControlFlow("if (parameterNames[i].equals($S))", banWith.target())
+          .addStatement("banWith = arguments[i].toString()")
+          .addStatement("System.out.println(banWith)")
+          .addStatement("$L.checkBanAndAccess($L() + banWith)", "cache", "getUserIp")
+          .addStatement("break")
+          .endControlFlow()
+          .endControlFlow();
+    } else {
+      codes.addStatement("$L.checkBanAndAccess($L())", "cache", "getUserIp");
+    }
 
     final MethodSpec methodSpec = MethodSpec.methodBuilder("beforeMethodBan" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(annotationSpec)
         .addParameter(ClassName.bestGuess(JOIN_POINT.getName()), "joinPoint")
-        .addCode(codes)
+        .addCode(codes.build())
         .build();
 
     final TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
@@ -139,19 +193,15 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addMethod(getUserIpMethodSpec)
         .build();
 
-    final String packageName = element.getEnclosingElement().toString();
-    saveJavaFile(packageName, classSpec);
+    return classSpec;
   }
 
-  private void generateEnableAopClass(Element element) {
-    final TypeSpec enableAopClass = TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
+  private TypeSpec generateEnableAopClass(Element element) {
+    return TypeSpec.classBuilder("EnableAopClass" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
         .addAnnotation(ClassName.bestGuess(ENABLE_ASPECT_JAUTO_PROXY.getName()))
         .build();
-
-    final String packageName = element.getEnclosingElement().toString();
-    saveJavaFile(packageName, enableAopClass);
   }
 
   private void saveJavaFile(String fullPackageName, TypeSpec classSpec) {

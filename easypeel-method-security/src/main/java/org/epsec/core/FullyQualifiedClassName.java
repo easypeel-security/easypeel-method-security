@@ -31,6 +31,7 @@ public enum FullyQualifiedClassName {
   ENABLE_ASPECT_JAUTO_PROXY("org.springframework.context.annotation.EnableAspectJAutoProxy"),
   JOIN_POINT("org.aspectj.lang.JoinPoint"),
   ASPECT("org.aspectj.lang.annotation.Aspect"),
+  ASPECT_METHOD_SIGNATURE("org.aspectj.lang.reflect.MethodSignature"),
   BEFORE("org.aspectj.lang.annotation.Before"),
   HTTP_SERVLET_REQUEST("jakarta.servlet.http.HttpServletRequest"),
   SERVLET_REQUEST_ATTRIBUTES("org.springframework.web.context.request.ServletRequestAttributes"),
