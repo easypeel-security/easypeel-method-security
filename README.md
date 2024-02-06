@@ -18,16 +18,18 @@ specific methods, which is activated when certain traffic thresholds are reached
 For gradle,
 
 ```groovy
-implementation 'io.github.easypeel-security:easypeel-method-security:0.0.1'
+annotationProcessor 'io.github.easypeel-security:easypeel-method-security:0.0.1'
 ```
 
 For maven,
 
 ```xml
+
 <dependency>
   <groupId>io.github.easypeel-security</groupId>
   <artifactId>easypeel-method-security</artifactId>
   <version>0.0.1</version>
+  <scope>provided</scope>
 </dependency>
 ```
 
@@ -36,6 +38,7 @@ For maven,
 ### 1. MethodBan
 
 ```java
+
 @GetMapping("/")
 @MethodBan(times = 3, seconds = 10, banSeconds = 1000)
 public String hello() {
