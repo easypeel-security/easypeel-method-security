@@ -57,6 +57,11 @@ mavenPublishing {
                 name = 'MoonSeonghun'
                 email = 'penekhun@gmail.com'
                 url = 'https://github.com/PENEKhun'
+                group = 'Owner'
+                organization {
+                    name = 'easypeel-security'
+                    url = 'https://github.com/easypeel-security'
+                }
             }
         }
 
