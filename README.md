@@ -39,17 +39,37 @@ For maven,
 
 ### 1. MethodBan
 
+**1.1. Only IP based ban :**
+
 ```java
 
 @GetMapping("/")
-@MethodBan(times = 3, seconds = 10, banSeconds = 1000)
+@MethodBan(times = 3, seconds = 10, banSeconds = 1000) // this
 public String hello() {
   return "Hello World!";
 }
 ```
 
-> Once a user accesses an API `3 times` within `10 seconds`, they are prevented from accessing the
+> Once a same IP accesses an API `3 times` within `10 seconds`, they are prevented from accessing
+> the
 > same API for `1000 banSeconds`.
+
+**1.2. IP & User based ban :**
+
+```java
+
+@Secured(ROLES.ENTERPRISE)
+@PostMapping("/job-posting")
+@MethodBan(times = 2, seconds = 10, banSeconds = 1000,
+    additionalFilter = @ParameterFilter(name = "enterpriseUser")) // this
+public ApiResponse<JobPostingCreateRes> createJobPosting(
+    @CurrentUser EnterpriseUserAccount enterpriseUser) {
+
+}
+```
+
+> Once a same IP and User Credential accesses an API `2 times` within `10 seconds`, they are
+> prevented from accessing the same API for `1000 banSeconds`.
 
 ### 2. Another Feature is Coming Soon!
 
