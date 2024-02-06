@@ -50,7 +50,7 @@ public class MethodBanManager implements MethodBanInterface {
     this.banMessage = banMessage;
     this.fqcn = new Fqcn(packageWithMethod);
 
-    final int defaultMaximumSize = 1_000_00;
+    final int defaultMaximumSize = 1_000_000;
     accessCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
         .maximumSize(defaultMaximumSize)
         .expireAfterWrite(seconds, TimeUnit.SECONDS)
