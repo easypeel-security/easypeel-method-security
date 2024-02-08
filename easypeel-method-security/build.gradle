@@ -1,10 +1,11 @@
-apply plugin: 'java'
 apply plugin: 'java-library'
 pluginManager.apply("io.github.goooler.shadow")
 //pluginManager.apply("com.github.johnrengelman.shadow")
 pluginManager.apply("com.vanniktech.maven.publish")
 
 java {
+    withJavadocJar()
+    withSourcesJar()
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
@@ -34,6 +35,9 @@ publishing {
     }
 }
 
+tasks.withType(GenerateModuleMetadata) {
+    dependsOn ':easypeel-method-security:plainJavadocJar'
+}
 
 mavenPublishing {
     coordinates(rootPackageName, easypeelMethodSecurity, easypeelMethodSecurityVersion)
