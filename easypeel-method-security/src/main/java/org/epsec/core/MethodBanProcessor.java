@@ -22,6 +22,7 @@ import static org.epsec.core.FullyQualifiedClassName.ASPECT_METHOD_SIGNATURE;
 import static org.epsec.core.FullyQualifiedClassName.BEFORE;
 import static org.epsec.core.FullyQualifiedClassName.COMPONENT;
 import static org.epsec.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
+import static org.epsec.core.FullyQualifiedClassName.GENERATED;
 import static org.epsec.core.FullyQualifiedClassName.HTTP_SERVLET_REQUEST;
 import static org.epsec.core.FullyQualifiedClassName.JOIN_POINT;
 import static org.epsec.core.FullyQualifiedClassName.REQUEST_CONTEXT_HOLDER;
@@ -209,6 +210,12 @@ public class MethodBanProcessor extends AbstractProcessor {
     Filer filer = processingEnv.getFiler();
     String originalPackageName = fullPackageName.substring(0, fullPackageName.lastIndexOf("."));
     try {
+      classSpec = classSpec.toBuilder()
+          .addAnnotation(AnnotationSpec.builder(ClassName.bestGuess(GENERATED.getName()))
+              .addMember("value", "$S", MethodBanProcessor.class.getName())
+              .build())
+          .build();
+
       JavaFile.builder(originalPackageName, classSpec)
           .build()
           .writeTo(filer);

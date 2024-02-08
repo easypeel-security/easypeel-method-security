@@ -34,6 +34,7 @@ public enum FullyQualifiedClassName {
   ASPECT_METHOD_SIGNATURE("org.aspectj.lang.reflect.MethodSignature"),
   BEFORE("org.aspectj.lang.annotation.Before"),
   HTTP_SERVLET_REQUEST("jakarta.servlet.http.HttpServletRequest"),
+  GENERATED("jakarta.annotation.Generated"),
   SERVLET_REQUEST_ATTRIBUTES("org.springframework.web.context.request.ServletRequestAttributes"),
   REQUEST_CONTEXT_HOLDER("org.springframework.web.context.request.RequestContextHolder");
 
