@@ -62,7 +62,7 @@ import com.squareup.javapoet.TypeSpec;
 @SuppressWarnings("all")
 public class MethodBanProcessor extends AbstractProcessor {
 
-  private boolean isAlreadyProcessed;
+  private boolean isAlreadyProcessedAopEnable = false;
 
   @Override
   public Set<String> getSupportedAnnotationTypes() {
@@ -82,13 +82,8 @@ public class MethodBanProcessor extends AbstractProcessor {
   public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(MethodBan.class);
     for (Element element : elements) {
-      if (isAlreadyProcessed) {
-        break;
-      }
-
       checkValidMethodBan(element);
       processMethodBan(element);
-      isAlreadyProcessed = true;
     }
     return true;
   }
@@ -103,9 +98,11 @@ public class MethodBanProcessor extends AbstractProcessor {
     TypeSpec enableAopClass = generateEnableAopClass(element);
     TypeSpec banAspectClass = generateMethodBanAspect(element, banWith);
 
-    // get the package name
     String fullPackageName = element.getEnclosingElement().toString();
-    saveJavaFile(fullPackageName, enableAopClass);
+    if (!isAlreadyProcessedAopEnable) {
+      isAlreadyProcessedAopEnable = true;
+      saveJavaFile(fullPackageName, enableAopClass);
+    }
     saveJavaFile(fullPackageName, banAspectClass);
   }
 
@@ -133,8 +130,10 @@ public class MethodBanProcessor extends AbstractProcessor {
 
   private TypeSpec generateMethodBanAspect(Element element, ParameterFilter banWith) {
     ClassName before = ClassName.bestGuess(BEFORE.getName());
+    String fullQualifiedName = element.getEnclosingElement().toString();
     AnnotationSpec annotationSpec = AnnotationSpec.builder(before)
-        .addMember("value", "$S", "@annotation(%s)".formatted(ClassName.get(MethodBan.class)))
+        .addMember("value", "$S",
+            "execution(* %s(..))".formatted(fullQualifiedName + "." + element.getSimpleName()))
         .build();
 
     MethodSpec getUserIpMethodSpec = MethodSpec.methodBuilder("getUserIp")
