@@ -7,11 +7,6 @@ plugins {
 
 apply from: 'lint.gradle'
 
-java {
-	withJavadocJar()
-	withSourcesJar()
-}
-
 subprojects {
 	group = rootPackageName
 	version = easypeelMethodSecurityVersion
