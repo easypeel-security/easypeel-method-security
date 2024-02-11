@@ -26,12 +26,31 @@ class MethodBanManagerTest {
   final String testIp = "Test";
 
   @Test
+  void checkBanAndAccessThrowsWhenWillExceedAccess() {
+    // given
+    final MethodBanManager caffeines = new MethodBanManager("org.test.method", 3, 2, 1, "You are banned");
+    caffeines.clearCaches();
+    caffeines.checkBanAndAccess(testIp);
+    caffeines.checkBanAndAccess(testIp);
+
+    // when & then
+    assertThrows(BanException.class,
+        () -> caffeines.checkBanAndAccess(testIp),
+        "Your are banned");
+  }
+
+  @Test
   void checkBanAndAccessThrowsWhenExceedAccess() {
     // given
     final MethodBanManager caffeines = new MethodBanManager("org.test.method", 3, 2, 1, "You are banned");
     caffeines.clearCaches();
     caffeines.checkBanAndAccess(testIp);
     caffeines.checkBanAndAccess(testIp);
+    try {
+      caffeines.checkBanAndAccess(testIp);
+    } catch (BanException e) {
+      // ignore
+    }
 
     // when & then
     assertThrows(BanException.class,
