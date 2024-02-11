@@ -9,9 +9,6 @@
 You can easily configure method-level security in your
 RestController through annotations.
 
-This includes the ability to implement an IP-based ban on
-specific methods, which is activated when certain traffic thresholds are reached.
-
 > Since it's still in beta, the software currently has limited features. If you're interested in
 > following the project's progress, please press the ⭐ button to stay updated.
 
@@ -21,20 +18,16 @@ specific methods, which is activated when certain traffic thresholds are reached
 
 ## Dependencies
 
-For gradle,
-
 ```groovy
-annotationProcessor 'io.github.easypeel-security:easypeel-method-security:{{VERSION}}'
+annotationProcessor 'io.github.easypeel-security:easypeel-method-security:0.0.3'
 ```
-
-For maven,
 
 ```xml
 
 <dependency>
   <groupId>io.github.easypeel-security</groupId>
   <artifactId>easypeel-method-security</artifactId>
-  <version>{{VERSION}}</version>
+  <version>0.0.3</version>
   <scope>provided</scope>
 </dependency>
 ```
@@ -42,6 +35,11 @@ For maven,
 ## Quick Start
 
 ### 1. MethodBan
+
+The @MethodBan enables you to implement a simple Rate Limit within your controller.
+If you need more details, please check the [details] page.
+
+[details]: https://github.com/easypeel-security/easypeel-method-security/wiki/MethodBan
 
 **1.1. Only IP based ban :**
 
@@ -54,25 +52,25 @@ public String hello() {
 }
 ```
 
-> Once a same IP accesses an API `3 times` within `10 seconds`, they are prevented from accessing
-> the
-> same API for `1000 banSeconds`.
+> Once a `same IP` accesses an API `3 times` within `10 seconds`, they are prevented from accessing
+> the same API for `1000 banSeconds`.
 
 **1.2. IP & User based ban :**
 
 ```java
 
-@Secured(ROLES.ENTERPRISE)
-@PostMapping("/job-posting")
-@MethodBan(times = 2, seconds = 10, banSeconds = 1000,
+@PostMapping("/")
+@MethodBan(times = 3, seconds = 10, banSeconds = 1000,
+    banMessage = "You're writing too fast. Please try again later.",
     additionalFilter = @ParameterFilter(name = "enterpriseUser")) // this
-public ApiResponse<JobPostingCreateRes> createJobPosting(
+public void createJobPosting(
     @CurrentUser EnterpriseUserAccount enterpriseUser) {
+  // ... 
 
 }
 ```
 
-> Once a same IP and User Credential accesses an API `2 times` within `10 seconds`, they are
+> Once a `same IP and User Credential` accesses an API `3 times` within `10 seconds`, they are
 > prevented from accessing the same API for `1000 banSeconds`.
 
 ### 2. Another Feature is Coming Soon!
