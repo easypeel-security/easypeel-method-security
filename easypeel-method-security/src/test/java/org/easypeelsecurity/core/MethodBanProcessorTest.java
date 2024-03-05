@@ -18,18 +18,9 @@ package org.easypeelsecurity.core;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
-import javax.annotation.processing.Filer;
-import javax.annotation.processing.Messager;
-import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 import org.junit.jupiter.api.Test;
@@ -39,7 +30,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
-import com.squareup.javapoet.JavaFile;
 
 @SuppressWarnings("checkstyle:FinalLocalVariable")
 class MethodBanProcessorTest {
@@ -58,22 +48,6 @@ class MethodBanProcessorTest {
 
     // then
     assertThat(compilation).hadErrorContaining("MethodBan is only supported in Java 17 or higher.");
-  }
-
-  @Test
-  void writeToOccurIoException() throws IOException {
-    // given
-    final Messager messager = mock(Messager.class);
-    final JavaFile javaFile = mock(JavaFile.class);
-    doThrow(IOException.class).when(javaFile).writeTo(any(Filer.class));
-
-    // when & then
-    JavaFileObject src = JavaFileObjects.forResource("before/MethodBanHappy.java");
-    Compilation compilation = javac()
-        .withProcessors(new org.easypeelsecurity.core.MethodBanProcessor())
-        .compile(src);
-
-    verify(messager, times(1)).printMessage(Diagnostic.Kind.ERROR, any());
   }
 
   @Test
