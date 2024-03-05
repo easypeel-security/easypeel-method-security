@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec.core;
+package org.easypeelsecurity.core;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

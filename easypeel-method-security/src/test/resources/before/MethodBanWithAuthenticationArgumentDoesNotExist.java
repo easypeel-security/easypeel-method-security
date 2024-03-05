@@ -1,7 +1,7 @@
 package com.example;
 
-import org.epsec.core.MethodBan;
-import org.epsec.core.ParameterFilter;
+import org.easypeelsecurity.core.MethodBan;
+import org.easypeelsecurity.core.ParameterFilter;
 
 class HelloWorld {
 

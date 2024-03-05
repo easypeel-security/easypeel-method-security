@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.epsec.engine;
+package org.easypeelsecurity.engine;
 
 import java.util.Arrays;
 
-import org.epsec.util.StringUtils;
+import org.easypeelsecurity.util.StringUtils;
 
 /**
  * Fully Qualified Class Name Data Structure.

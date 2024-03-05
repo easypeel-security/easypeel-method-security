@@ -1,6 +1,6 @@
 package com.example;
 
-import org.epsec.core.MethodBan;
+import org.easypeelsecurity.core.MethodBan;
 
 class HelloWorld {
 

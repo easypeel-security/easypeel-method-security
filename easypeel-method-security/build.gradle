@@ -1,12 +1,35 @@
-apply plugin: 'java-library'
-pluginManager.apply("io.github.goooler.shadow")
-//pluginManager.apply("com.github.johnrengelman.shadow")
-pluginManager.apply("com.vanniktech.maven.publish")
+plugins {
+    id 'com.vanniktech.maven.publish' version "0.27.0"
+    id 'io.github.goooler.shadow' version '8.1.6'
+    //	id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'java-library'
+}
+
+
+group = rootPackageName
+version = easypeelMethodSecurityVersion
 
 java {
-    withJavadocJar()
-    withSourcesJar()
     sourceCompatibility = JavaVersion.VERSION_17
+}
+
+
+tasks.register('javadocJar', Jar) {
+    dependsOn javadoc
+    archiveClassifier.set('javadoc')
+    from javadoc.destinationDir
+}
+
+tasks.register('sourcesJarBuild', Jar) {
+    dependsOn classes
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJarBuild
+    archives jar
 }
 
 dependencies {
@@ -19,31 +42,17 @@ shadowJar {
     archiveVersion.set(easypeelMethodSecurityVersion)
     archiveClassifier.set("")
     archiveExtension.set("jar")
+    mergeServiceFiles()
 
-    relocate("com.squareup.javapoet", "org.epsec.javapoet")
-    relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
-}
-
-jar.enabled = false
-
-publishing {
-    publications {
-        shadow(MavenPublication) {
-            artifact shadowJar
-            from components.java
-        }
-    }
-}
-
-tasks.withType(GenerateModuleMetadata) {
-    dependsOn ':easypeel-method-security:plainJavadocJar'
+    relocate("com.squareup.javapoet", rootPackageName + ".javapoet")
+    relocate("com.github.benmanes.caffeine", rootPackageName + ".caffeine")
 }
 
 mavenPublishing {
     coordinates(rootPackageName, easypeelMethodSecurity, easypeelMethodSecurityVersion)
 
     pom {
-        name = easypeelMethodSecurity
+        name = 'Easypeel Method Security'
         description = 'Configure method-level security easily in your RestController'
         inceptionYear = '2024'
         url = 'https://github.com/easypeel-security/easypeel-method-security/'
@@ -76,3 +85,8 @@ mavenPublishing {
         }
     }
 }
+
+build {
+    dependsOn shadowJar
+}
+

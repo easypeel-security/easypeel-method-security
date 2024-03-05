@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec.util;
+package org.easypeelsecurity.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
