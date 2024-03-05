@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * MethodBan Util.
- */
-package org.epsec.util;
+package org.easypeelsecurity.engine;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+class BanExceptionTest {
+
+  @Test
+  void banExceptionConstructTest() {
+    // given
+    final String message = "error message";
+
+    // when
+    final BanException banException = new BanException(message);
+
+    // then
+    assertEquals(message, banException.getMessage());
+  }
+}

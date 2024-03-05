@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec.core;
+package org.easypeelsecurity.core;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static com.google.testing.compile.Compiler.javac;
@@ -42,7 +42,7 @@ class MethodBanProcessorTest {
 
     // when
     Compilation compilation = javac()
-        .withProcessors(new MethodBanProcessor())
+        .withProcessors(new org.easypeelsecurity.core.MethodBanProcessor())
         .withOptions("-source", javaVersion, "-target", javaVersion)
         .compile(src);
 
@@ -54,7 +54,7 @@ class MethodBanProcessorTest {
   void compileHappy() {
     JavaFileObject src = JavaFileObjects.forResource("before/MethodBanHappy.java");
     Compilation compilation = javac()
-        .withProcessors(new MethodBanProcessor())
+        .withProcessors(new org.easypeelsecurity.core.MethodBanProcessor())
         .compile(src);
     assertThat(compilation).succeededWithoutWarnings();
   }
@@ -64,7 +64,7 @@ class MethodBanProcessorTest {
   void testMethodBanProcessorHappy(String fileName) {
     JavaFileObject src = JavaFileObjects.forResource("before/" + fileName);
     Compilation compilation = javac()
-        .withProcessors(new MethodBanProcessor())
+        .withProcessors(new org.easypeelsecurity.core.MethodBanProcessor())
         .compile(src);
     assertThat(compilation).succeededWithoutWarnings();
   }
@@ -81,7 +81,7 @@ class MethodBanProcessorTest {
   void testMethodBanProcessor(String fileName, String expectedErrorMessage) {
     JavaFileObject src = JavaFileObjects.forResource("before/" + fileName);
     Compilation compilation = javac()
-        .withProcessors(new MethodBanProcessor())
+        .withProcessors(new org.easypeelsecurity.core.MethodBanProcessor())
         .compile(src);
     assertThat(compilation).hadErrorContaining(expectedErrorMessage);
   }

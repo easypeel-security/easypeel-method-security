@@ -42,7 +42,7 @@ followed. (It is more loosely enforced in test code).
 Run the following command to deploy the library to your local maven repository
 
 ```bash
-./gradlew publishShadowPublicationToMavenLocal
+./gradlew publishMavenPublicationToMavenLocal
 ```
 
 and then add the following to your `build.gradle` file (for test locally)
@@ -70,7 +70,7 @@ export ORG_GRADLE_PROJECT_signingInMemoryKeyPassword=""
 - Deploy to maven central manually
 
 ```bash
-./gradlew publishShadowPublicationToMavenCentralRepository -PRELEASE_SIGNING_ENABLED=true
+./gradlew publishMavenPublicationToMavenCentralRepository -PRELEASE_SIGNING_ENABLED=true
 ```
 
 -->

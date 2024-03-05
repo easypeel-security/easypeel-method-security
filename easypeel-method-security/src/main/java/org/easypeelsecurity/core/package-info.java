@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec.engine;
-
 /**
- * When @MethodBan deny user’s access, This exception will be thrown.
- * @author PENEKhun
+ * MethodBan Core.
  */
-public class BanException extends RuntimeException {
-
-  /**
-   * Default Constructor.
-   *
-   * @param message the message to display when the exception is thrown.
-   */
-  public BanException(String message) {
-    super(message);
-  }
-}
+package org.easypeelsecurity.core;
