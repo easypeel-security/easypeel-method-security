@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.epsec.core;
+package org.easypeelsecurity.core;
 
 import static javax.tools.Diagnostic.Kind.ERROR;
-import static org.epsec.core.FullyQualifiedClassName.ASPECT;
-import static org.epsec.core.FullyQualifiedClassName.ASPECT_METHOD_SIGNATURE;
-import static org.epsec.core.FullyQualifiedClassName.BEFORE;
-import static org.epsec.core.FullyQualifiedClassName.COMPONENT;
-import static org.epsec.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
-import static org.epsec.core.FullyQualifiedClassName.GENERATED;
-import static org.epsec.core.FullyQualifiedClassName.HTTP_SERVLET_REQUEST;
-import static org.epsec.core.FullyQualifiedClassName.JOIN_POINT;
-import static org.epsec.core.FullyQualifiedClassName.REQUEST_CONTEXT_HOLDER;
-import static org.epsec.core.FullyQualifiedClassName.SERVLET_REQUEST_ATTRIBUTES;
-import static org.epsec.core.FullyQualifiedClassName.isWebAnnotation;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.ASPECT;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.ASPECT_METHOD_SIGNATURE;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.BEFORE;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.COMPONENT;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.GENERATED;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.HTTP_SERVLET_REQUEST;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.JOIN_POINT;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.REQUEST_CONTEXT_HOLDER;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.SERVLET_REQUEST_ATTRIBUTES;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.isWebAnnotation;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,8 +44,8 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
-import org.epsec.engine.MethodBanManager;
-import org.epsec.util.StringUtils;
+import org.easypeelsecurity.engine.MethodBanManager;
+import org.easypeelsecurity.util.StringUtils;
 
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;

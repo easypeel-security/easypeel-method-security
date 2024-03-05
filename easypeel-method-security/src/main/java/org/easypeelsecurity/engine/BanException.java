@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.epsec.engine;
+package org.easypeelsecurity.engine;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+/**
+ * When @MethodBan deny user’s access, This exception will be thrown.
+ * @author PENEKhun
+ */
+public class BanException extends RuntimeException {
 
-import org.junit.jupiter.api.Test;
-
-class BanExceptionTest {
-
-  @Test
-  void banExceptionConstructTest() {
-    // given
-    final String message = "error message";
-
-    // when
-    final BanException banException = new BanException(message);
-
-    // then
-    assertEquals(message, banException.getMessage());
+  /**
+   * Default Constructor.
+   *
+   * @param message the message to display when the exception is thrown.
+   */
+  public BanException(String message) {
+    super(message);
   }
 }

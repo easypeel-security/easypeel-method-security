@@ -14,20 +14,7 @@
  * limitations under the License.
  */
 
-package org.epsec.util;
-
 /**
- * String utilities.
+ * MethodBan Util.
  */
-@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
-public class StringUtils {
-
-  /**
-   * Check if the string is null or empty.
-   * @param str the string to check.
-   * @return true if the string is null or empty, false otherwise.
-   */
-  public static boolean hasText(String str) {
-      return str != null && !str.trim().isEmpty();
-    }
-}
+package org.easypeelsecurity.util;

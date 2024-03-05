@@ -20,8 +20,8 @@ shadowJar {
     archiveClassifier.set("")
     archiveExtension.set("jar")
 
-    relocate("com.squareup.javapoet", "org.epsec.javapoet")
-    relocate("com.github.benmanes.caffeine", "org.epsec.caffeine")
+    relocate("com.squareup.javapoet", rootPackageName + ".javapoet")
+    relocate("com.github.benmanes.caffeine", rootPackageName + ".caffeine")
 }
 
 jar.enabled = false

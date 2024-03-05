@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package org.epsec.engine;
+package org.easypeelsecurity.util;
 
 /**
- * The interface for MethodBanManager.
- * @author PENEKhun
+ * String utilities.
  */
-public interface MethodBanInterface {
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
+public class StringUtils {
 
   /**
-   * 1. Check if the number of visits exceeds the access time.
-   * 2. if true, throw BanException.
-   * 3. if false, increment the number of visits.
-   * @param ipAddress Ip address of the user accessed to api. (must have a value)
-   * @throws BanException if the number of visits exceeds the access time.
+   * Check if the string is null or empty.
+   * @param str the string to check.
+   * @return true if the string is null or empty, false otherwise.
    */
-  void checkBanAndAccess(String ipAddress) throws BanException;
+  public static boolean hasText(String str) {
+      return str != null && !str.trim().isEmpty();
+    }
 }
