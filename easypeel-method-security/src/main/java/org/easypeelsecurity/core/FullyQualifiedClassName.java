@@ -36,6 +36,7 @@ public enum FullyQualifiedClassName {
   HTTP_SERVLET_REQUEST("jakarta.servlet.http.HttpServletRequest"),
   GENERATED("jakarta.annotation.Generated"),
   SERVLET_REQUEST_ATTRIBUTES("org.springframework.web.context.request.ServletRequestAttributes"),
+  AUTO_WIRED("org.springframework.beans.factory.annotation.Autowired"),
   REQUEST_CONTEXT_HOLDER("org.springframework.web.context.request.RequestContextHolder");
 
   private final String name;

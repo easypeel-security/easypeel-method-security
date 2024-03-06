@@ -35,6 +35,8 @@ artifacts {
 dependencies {
     implementation "com.squareup:javapoet:${javapoetVersion}"
     implementation "com.github.ben-manes.caffeine:caffeine:${caffeineVersion}"
+
+    compileOnly "org.springframework.boot:spring-boot-starter:${springVersion}"
 }
 
 shadowJar {

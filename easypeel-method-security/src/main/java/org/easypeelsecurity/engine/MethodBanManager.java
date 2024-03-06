@@ -19,6 +19,9 @@ package org.easypeelsecurity.engine;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import org.easypeelsecurity.configuration.EasypeelAutoConfiguration;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -34,6 +37,8 @@ public class MethodBanManager implements MethodBanInterface {
   private final String banMessage;
   private static final HashMap<Fqcn, Cache<String, Integer>> accessCache = new HashMap<>();
   private static final HashMap<Fqcn, Cache<String, LocalDateTime>> banCache = new HashMap<>();
+  private final Logger logger = Logger.getLogger(MethodBanManager.class.getName());
+  private final EasypeelAutoConfiguration configuration;
 
   /**
    * Constructor.
@@ -45,10 +50,11 @@ public class MethodBanManager implements MethodBanInterface {
    * @param banMessage        ban message (must have text)
    */
   public MethodBanManager(String packageWithMethod, int times, int seconds, int banSeconds,
-      String banMessage) {
+      String banMessage, EasypeelAutoConfiguration configuration) {
     this.times = times;
     this.banMessage = banMessage;
     this.fqcn = new Fqcn(packageWithMethod);
+    this.configuration = configuration;
 
     final int defaultMaximumSize = 1_000_000;
     accessCache.putIfAbsent(this.fqcn, Caffeine.newBuilder()
@@ -63,10 +69,18 @@ public class MethodBanManager implements MethodBanInterface {
 
   @Override
   public void checkBanAndAccess(String ipAddress) throws BanException {
+    if (!this.configuration.isEnabled()) {
+      return;
+    }
+
+    if (this.configuration.isLogLevelDev()) {
+      logger.info("MethodBanManager: Checking access for IP %s to method %s".formatted(ipAddress, fqcn));
+    }
+
     final Cache<String, Integer> accessLog = accessCache.get(fqcn);
     final Cache<String, LocalDateTime> banLog = banCache.get(fqcn);
     if (banLog.getIfPresent(ipAddress) != null) {
-      throw new BanException(banMessage);
+      this.throwBanException(ipAddress);
     }
 
     final Integer count = accessLog.getIfPresent(ipAddress);
@@ -75,10 +89,20 @@ public class MethodBanManager implements MethodBanInterface {
     } else if (count + 1 >= times) {
       banLog.put(ipAddress, LocalDateTime.now());
       accessLog.invalidate(ipAddress);
-      throw new BanException(banMessage);
+      this.throwBanException(ipAddress);
     } else {
       accessLog.put(ipAddress, count + 1);
     }
+  }
+
+  private void throwBanException(String userIp) {
+    if (this.configuration.isLogLevelProd() || this.configuration.isLogLevelDev()) {
+      logger.warning(
+          "MethodBanManager: User with IP %s has been banned from calling method %s".formatted(
+              userIp, fqcn));
+    }
+
+    throw new BanException(banMessage);
   }
 
   /**
