@@ -19,6 +19,7 @@ package org.easypeelsecurity.core;
 import static javax.tools.Diagnostic.Kind.ERROR;
 import static org.easypeelsecurity.core.FullyQualifiedClassName.ASPECT;
 import static org.easypeelsecurity.core.FullyQualifiedClassName.ASPECT_METHOD_SIGNATURE;
+import static org.easypeelsecurity.core.FullyQualifiedClassName.AUTO_WIRED;
 import static org.easypeelsecurity.core.FullyQualifiedClassName.BEFORE;
 import static org.easypeelsecurity.core.FullyQualifiedClassName.COMPONENT;
 import static org.easypeelsecurity.core.FullyQualifiedClassName.ENABLE_ASPECT_JAUTO_PROXY;
@@ -44,6 +45,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
+import org.easypeelsecurity.configuration.EasypeelAutoConfiguration;
 import org.easypeelsecurity.engine.MethodBanManager;
 import org.easypeelsecurity.util.StringUtils;
 
@@ -51,6 +53,7 @@ import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.CodeBlock.Builder;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -158,9 +161,9 @@ public class MethodBanProcessor extends AbstractProcessor {
     Builder codes = CodeBlock.builder()
         .addStatement("$T packageName = $L.getSignature().getDeclaringTypeName()", String.class, "joinPoint")
         .addStatement("$T methodName = $L.getSignature().getName()", String.class, "joinPoint")
-        .addStatement("$T cache = new $T(packageName + methodName, $L, $L, $L, $S)",
+        .addStatement("$T cache = new $T(packageName + methodName, $L, $L, $L, $S, $L)",
             MethodBanManager.class, MethodBanManager.class, methodBan.times(), methodBan.seconds(),
-            methodBan.banSeconds(), methodBan.banMessage());
+            methodBan.banSeconds(), methodBan.banMessage(), "easypeelAutoConfiguration");
 
     if (banWith.isEnabled()) {
       codes.addStatement("$T banWith", String.class)
@@ -186,10 +189,17 @@ public class MethodBanProcessor extends AbstractProcessor {
         .addCode(codes.build())
         .build();
 
+    FieldSpec easypeelAutoConfiguration = FieldSpec.builder(EasypeelAutoConfiguration.class,
+            "easypeelAutoConfiguration", Modifier.PRIVATE)
+        .addAnnotation(AnnotationSpec.builder(ClassName.bestGuess(AUTO_WIRED.getName()))
+            .build())
+        .build();
+
     TypeSpec classSpec = TypeSpec.classBuilder("MethodBanAspect" + System.nanoTime())
         .addModifiers(Modifier.PUBLIC)
         .addAnnotation(ClassName.bestGuess(ASPECT.getName()))
         .addAnnotation(ClassName.bestGuess(COMPONENT.getName()))
+        .addField(easypeelAutoConfiguration)
         .addMethod(methodSpec)
         .addMethod(getUserIpMethodSpec)
         .build();
