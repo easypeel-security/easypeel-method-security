@@ -19,15 +19,15 @@ RestController through annotations.
 ## Dependencies
 
 ```groovy
-annotationProcessor 'io.github.easypeel-security:easypeel-method-security:0.0.3'
+implementation 'org.easypeelsecurity:easypeel-method-security:0.0.4'
 ```
 
 ```xml
 
 <dependency>
-  <groupId>io.github.easypeel-security</groupId>
+  <groupId>org.easypeelsecurity</groupId>
   <artifactId>easypeel-method-security</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4</version>
   <scope>provided</scope>
 </dependency>
 ```
