@@ -34,6 +34,7 @@ class FullyQualifiedClassNameTest {
       "org.springframework.context.annotation.EnableAspectJAutoProxy, ENABLE_ASPECT_JAUTO_PROXY",
       "org.aspectj.lang.JoinPoint, JOIN_POINT",
       "org.aspectj.lang.annotation.Aspect, ASPECT",
+      "org.springframework.beans.factory.annotation.Autowired, AUTO_WIRED",
       "org.aspectj.lang.annotation.Before, BEFORE",
       "jakarta.servlet.http.HttpServletRequest, HTTP_SERVLET_REQUEST",
       "org.springframework.web.context.request.ServletRequestAttributes, SERVLET_REQUEST_ATTRIBUTES",
@@ -56,6 +57,7 @@ class FullyQualifiedClassNameTest {
       "org.aspectj.lang.annotation.Aspect, false",
       "org.aspectj.lang.annotation.Before, false",
       "jakarta.servlet.http.HttpServletRequest, false",
+      "org.springframework.beans.factory.annotation.Autowired, false",
       "org.springframework.web.context.request.ServletRequestAttributes, false",
       "org.springframework.web.context.request.RequestContextHolder, false"
   })
