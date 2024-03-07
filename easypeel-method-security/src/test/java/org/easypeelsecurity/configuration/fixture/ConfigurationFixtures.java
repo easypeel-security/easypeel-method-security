@@ -20,7 +20,7 @@ import org.easypeelsecurity.configuration.EasypeelAutoConfiguration;
 import org.easypeelsecurity.configuration.LogLevel;
 import org.easypeelsecurity.configuration.LogOptions;
 
-@SuppressWarnings("ALL")
+@SuppressWarnings("all")
 public class ConfigurationFixtures {
 
   public static EasypeelAutoConfiguration createEasypeelAutoConfiguration() {
