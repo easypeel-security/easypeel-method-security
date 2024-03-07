@@ -22,6 +22,7 @@ subprojects {
 		testImplementation "com.google.testing.compile:compile-testing:${compileTestingVersion}"
 		testImplementation "org.springframework.boot:spring-boot-starter-web:${springVersion}"
 		testImplementation "org.springframework.boot:spring-boot-starter-aop:${springVersion}"
+		testImplementation "org.awaitility:awaitility:${awaitilityVersion}"
 	}
 
 	test {
