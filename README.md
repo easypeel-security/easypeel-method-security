@@ -2,8 +2,8 @@
 
 [![Build Status](https://github.com/easypeel-security/easypeel-method-security/actions/workflows/on-push.yml/badge.svg)](https://github.com/easypeel-security/easypeel-method-security/actions/workflows/on-push.yml)
 [![Coverage Status](https://codecov.io/gh/easypeel-security/easypeel-method-security/graph/badge.svg?token=9FUJAWJB5W)](https://codecov.io/gh/easypeel-security/easypeel-method-security)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.easypeel-security/easypeel-method-security.svg?label=Maven%20Central&color=)](https://mvnrepository.com/artifact/io.github.easypeel-security/easypeel-method-security)
-[![JavaDoc](https://javadoc.io/badge2/io.github.easypeel-security/easypeel-method-security/javadoc.svg)](https://javadoc.io/doc/io.github.easypeel-security/easypeel-method-security)
+[![Maven Central](https://img.shields.io/maven-central/v/org.easypeelsecurity/easypeel-method-security.svg?label=Maven%20Central&color=)](https://mvnrepository.com/artifact/org.easypeelsecurity/easypeel-method-security)
+[![JavaDoc](https://javadoc.io/badge2/org.easypeelsecurity/easypeel-method-security/javadoc.svg)](https://javadoc.io/doc/org.easypeelsecurity/easypeel-method-security)
 [![License](https://img.shields.io/:license-apache-brightgreen.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 You can easily configure method-level security in your
@@ -20,16 +20,7 @@ RestController through annotations.
 
 ```groovy
 implementation 'org.easypeelsecurity:easypeel-method-security:0.0.4'
-```
-
-```xml
-
-<dependency>
-  <groupId>org.easypeelsecurity</groupId>
-  <artifactId>easypeel-method-security</artifactId>
-  <version>0.0.4</version>
-  <scope>provided</scope>
-</dependency>
+annotationProcessor 'org.easypeelsecurity:easypeel-method-security:0.0.4'
 ```
 
 ## Quick Start
