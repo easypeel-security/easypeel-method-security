@@ -20,16 +20,7 @@ RestController through annotations.
 
 ```groovy
 implementation 'org.easypeelsecurity:easypeel-method-security:0.0.4'
-```
-
-```xml
-
-<dependency>
-  <groupId>org.easypeelsecurity</groupId>
-  <artifactId>easypeel-method-security</artifactId>
-  <version>0.0.4</version>
-  <scope>provided</scope>
-</dependency>
+annotationProcessor 'org.easypeelsecurity:easypeel-method-security:0.0.4'
 ```
 
 ## Quick Start
